@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kit Clicker</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', sans-serif; /* Pixel-like font */
+      background-image: url('bg.jpeg');
+      background-size: cover;
+      background-repeat: repeat;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .coin-balance {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      background-color: black;
+      border-radius: 10px;
+      padding: 5px;
+      z-index: 1;
+    }
+
+    .coin-balance img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .coin-balance span {
+      color: white;
+      font-size: 20px;
+      margin-left: 10px;
+    }
+
+    .kit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .kit:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .kit:active {
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    .coin-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      color: white;
+      font-size: 20px;
+      animation: move 1s ease-in-out;
+      z-index: 1;
+    }
+
+    @keyframes move {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        top: 20px;
+        left: calc(100% - 80px);
+      }
+    }
+
+    .tittle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      padding: 5px;
+      z-index: 1;
+    }
+
+    /* Additional styles for the rating popup */
+    .rating-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .rating-stars {
+      margin: 10px;
+    }
+
+    .rating-submit {
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    /* Additional styles for the warning popup */
+    .warning-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: yellow;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 2;
+    }
+    .fttr {
+      position: absolute;
+      top: 20px;
+      bottom: 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      padding: 5px;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="coin-balance">
+    <img src="coin.png" alt="Coin logo">
+    <span id="balance">0</span>
+  </div>
+  <div class="tittle">
+    <h3 style="color: white;">Kit clicker</h3>
+    <br>
+
+  </div>
+  <img src="kit.png" alt="Kit" class="kit" onclick="handleClick()">
+  <!-- Rating Popup -->
+  <div class="rating-popup" id="ratingPopup">
+    <p>Do you enjoy Kit Clicker?</p>
+    <div class="rating-stars">
+      <span onclick="submitRating(1)">★</span>
+      <span onclick="submitRating(2)">★</span>
+      <span onclick="submitRating(3)">★</span>
+      <span onclick="submitRating(4)">★</span>
+      <span onclick="submitRating(5)">★</span>
+    </div>
+    <button class="rating-submit" onclick="closeRatingPopup()">Submit</button>
+  </div>
+  <!-- Warning Popup -->
+  <div class="warning-popup" id="warningPopup">
+    <p>Slow down, turbo-clicker! Something fishy is going on! 🐠</p>
+    <button onclick="closeWarningPopup()">Got it!</button>
+  </div>
+  <script>
+    let balance = document.getElementById("balance");
+    let kit = document.querySelector(".kit");
+    let currentBalance = localStorage.getItem("balance") || 0;
+    let lastClickTime = 0;
+
+    balance.textContent = formatNumber(currentBalance);
+
+    function addCoin() {
+      currentBalance++;
+      localStorage.setItem("balance", currentBalance);
+      balance.textContent = formatNumber(currentBalance);
+
+      let coin = document.createElement("div");
+      coin.classList.add("coin-animation");
+      coin.textContent = "+1";
+      document.body.appendChild(coin);
+
+      setTimeout(function () {
+        document.body.removeChild(coin);
+        checkCoinBalanceForRating();
+      }, 1000);
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + "M";
+      } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + "k";
+      } else {
+        return num;
+      }
+    }
+
+    function checkCoinBalanceForRating() {
+      if (
+        currentBalance === 100 ||
+        currentBalance === 1000 ||
+        currentBalance === 5000 ||
+        currentBalance === 10000
+      ) {
+        showRatingPopup();
+      }
+    }
+
+    function showRatingPopup() {
+      document.getElementById("ratingPopup").style.display = "block";
+    }
+
+    function closeRatingPopup() {
+      document.getElementById("ratingPopup").style.display = "none";
+    }
+
+    function submitRating(stars) {
+      // Replace 'YOUR_DISCORD_WEBHOOK_URL' with your actual webhook URL
+      const webhookUrl = 'https://discord.com/api/webhooks/1185329794997551235/HSr0gyDqK5wnyadrpJWIIneOOqy0r6ewL1p686j2zS8r6koOxDhHStCvS-zVVjOhYWOf';
+
+      const payload = {
+        content: `New Rating! ${stars} stars`,
+      };
+
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to send Discord webhook');
+          }
+        })
+        .catch(error => {
+          console.error('Error sending Discord webhook:', error);
+        });
+
+      closeRatingPopup();
+    }
+
+    function handleClick() {
+      const currentTime = new Date().getTime();
+      const clickInterval = currentTime - lastClickTime;
+
+      if (clickInterval < 50) {
+        showWarningPopup();
+      }
+
+      lastClickTime = currentTime;
+      addCoin();
+    }
+
+    function showWarningPopup() {
+      document.getElementById("warningPopup").style.display = "block";
+    }
+
+    function closeWarningPopup() {
+      document.getElementById("warningPopup").style.display = "none";
+    }
+  </script>
+</body>
+
+</html>
