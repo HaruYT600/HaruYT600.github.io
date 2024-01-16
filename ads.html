@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Haru's Empire Ad System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #28303D;
+            font-family: 'uni sans serif', sans-serif;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .form {
+            background-color: #121826;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .form input, .form textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            background-color: #28303D;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form input[type="file"] {
+            display: none;
+        }
+
+        .form label {
+            display: block;
+            cursor: pointer;
+        }
+
+        .form button {
+            width: 100%;
+            border: none;
+            outline: none;
+            background-color: #5A65EA;
+            color: white;
+            font-size: 18px;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .form button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Haru's Empire Ad System</h1>
+        <p>Want to grow? Want to make an ad? You can post an ad to our discord server and reach more people.</p>
+        <div class="form" id="form">
+            <div class="error" id="error"></div>
+            <input type="text" id="title" placeholder="Ad title" required>
+            <textarea id="description" placeholder="Ad description" rows="5" required></textarea>
+            <label for="image">Ad image</label>
+            <input type="file" id="image" accept="image/*" required>
+            <input type="url" id="link" placeholder="Ad link" required>
+            <button id="submit" disabled>Post ad</button>
+        </div>
+    </div>
+    <script>
+        // Get the form elements
+        const form = document.getElementById("form");
+        const title = document.getElementById("title");
+        const description = document.getElementById("description");
+        const image = document.getElementById("image");
+        const link = document.getElementById("link");
+        const submit = document.getElementById("submit");
+        const error = document.getElementById("error");
+
+        // Define the blocked words
+        const blockedWords = ["spam", "scam", "hack", "cheat", "illegal", "inappropriate", "porn", "sex", "nudes", "hack", "ip", "mods"];
+
+        // Define the webhook url
+        const webhookUrl = "https://discord.com/api/webhooks/1196819273537044601/_2kPSNF8GfzrsYbV9gilYIgSgX7ttZFh7Zwj1Qh8csLhJc_XUlOesWs0m3wcnqmCeeKm";
+
+        // Define the time limit in milliseconds
+        const timeLimit = 12 * 60 * 60 * 1000;
+
+        // Check if the user has posted an ad before
+        const lastPost = localStorage.getItem("lastPost");
+
+        // If yes, disable the form and show the remaining time
+        if (lastPost) {
+            const remainingTime = timeLimit - (Date.now() - lastPost);
+            if (remainingTime > 0) {
+                disableForm();
+                error.textContent = `You have already posted an ad. Please wait ${formatTime(remainingTime)} before posting another one.`;
+            }
+        }
+
+        // Listen for input changes and validate the form
+        form.addEventListener("input", validateForm);
+
+        // Listen for form submission and send the webhook
+        form.addEventListener("submit", sendWebhook);
+
+        // Function to disable the form
+        function disableForm() {
+            title.disabled = true;
+            description.disabled = true;
+            image.disabled = true;
+            link.disabled = true;
+            submit.disabled = true;
+        }
+
+        // Function to enable the form
+        function enableForm() {
+            title.disabled = false;
+            description.disabled = false;
+            image.disabled = false;
+            link.disabled = false;
+            submit.disabled = false;
+        }
+
+        // Function to validate the form
+        function validateForm() {
+            // Reset the error message
+            error.textContent = "";
+
+            // Get the input values
+            const titleValue = title.value.trim();
+            const descriptionValue = description.value.trim();
+            const imageValue = image.files[0];
+            const linkValue = link.value.trim();
+
+            // Check if all fields are filled
+            if (!titleValue || !descriptionValue || !imageValue || !linkValue) {
+                submit.disabled = true;
+                return;
+            }
+
+            // Check if any field contains blocked words
+            for (let word of blockedWords) {
+                if (titleValue.toLowerCase().includes(word) || descriptionValue.toLowerCase().includes(word) || linkValue.toLowerCase().includes(word)) {
+                    error.textContent = `Your ad contains a blocked word: ${word}. Please remove it and try again.`;
+                    submit.disabled = true;
+                    return;
+                }
+            }
+
+            // If everything is valid, enable the submit button
+            submit.disabled = false;
+        }
+
+        // Function to send the webhook
+        async function sendWebhook(event) {
+            // Prevent the default form behavior
+            event.preventDefault();
+
+            // Disable the form
+            disableForm();
+
+            // Show a loading message
+            error.textContent = "Posting your ad...";
+
+            // Create a form data object
+            const formData = new FormData();
+
+            // Append the webhook payload
+            formData.append("payload_json", JSON.stringify({
+                "embeds": [{
+                    "title": title.value,
+                    "description": description.value,
+                    "thumbnail": {
+                        "url": "attachment://image.png"
+                    },
+                    "fields": [{
+                        "name": "Link",
+                        "value": link.value
+                    }],
+                    "footer": {
+                        "text": "⚠️ The ads are posted by users. Report any that break the rules."
+                    }
+                }]
+            }));
+
+            // Append the image file
+            formData.append("image.png", image.files[0]);
+
+            // Send the webhook request
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: "POST",
+                    body: formData
+                });
+
+                // If the request was successful, show a success message and store the current time
+                if (response.ok) {
+                    error.textContent = "Your ad has been posted successfully.";
+                    localStorage.setItem("lastPost", Date.now());
+                } else {
+                    // If the request failed, show an error message and enable the form
+                    error.textContent = "Something went wrong. Please try again later.";
+                    enableForm();
+                }
+            } catch (error) {
+                // If the request threw an error, show an error message and enable the form
+                error.textContent = "Something went wrong. Please try again later.";
+                enableForm();
+            }
+        }
+
+        // Function to format the time in hours, minutes and seconds
+        function formatTime(milliseconds) {
+            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+    </script>
+</body>
+</html>
