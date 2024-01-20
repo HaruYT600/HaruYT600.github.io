@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Learn how to make a discord bot">
+  <meta name="keywords" content="discord-py, discord bot, how to make a discord bot, how to code a discord bot, discord py bot, discord bot code, how to code discord py bot, discord py easy">
+  <meta name="author" content="HaruYT600">
+  <meta name="title" content="How to make a discord bot">
+  <meta name="og:title" content="How to make a discord bot">
+  <meta name="og:description" content="Learn how to make a discord bot">
+  <meta name="og:image" content="https://media.discordapp.net/attachments/975514546120818698/1198075957433602189/IMG_7704.png">
+  <meta name="og:url" content="https://haruyt600.github.io/discord-py-bot-tutorial">
+  <meta name="og:type" content="website">
+  <meta name="og:site_name" content="HaruYT600">
+  <meta name="og:locale" content="en_US">
+  <meta name="og:locale:alternate" content="en_GB">
+  <meta name="og:locale:alternate" content="en_AU">
+  <meta name="og:locale:alternate" content="en_NZ">
+  <meta name="og:locale:alternate" content="en_CA">
+  <meta name="og:locale:alternate" content="en_ZA">
+  <meta name="og:locale:alternate" content="en_IE">
+  <link href="https://{{cdn}}/prismjs@v1.x/themes/prism.css" rel="stylesheet" />
+
+  <style>
+    /* CSS code for styling the website */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #262744;
+      font-family: "uni sans serif", sans-serif;
+      color: white;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+    }
+
+    .navbar a:hover {
+      background-color: #5A65EA;
+      border-radius: 5px;
+    }
+
+    .hero {
+      height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-gap: 20px;
+      margin-top: 40px;
+    }
+
+    .content h1, .content h2, .content h3 {
+      margin-bottom: 10px;
+    }
+
+    .content p {
+      margin-bottom: 20px;
+    }
+
+    .content .block {
+      background-color: #191B30;
+      padding: 20px;
+      border-left: 5px solid #5A65EA;
+      border-radius: 5px;
+    }
+    cd {
+      font-family: monospace;
+      background-color: #262744;
+      padding: 2px;
+    }
+    a {
+      text-decoration: none;
+      color: #4CA7F5;
+    }
+    .content .block code {
+      display: block;
+      font-family: monospace;
+      background-color: #101223;
+      padding: 10px;
+      overflow-x: auto;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .content .block img {
+      width: 100%;
+      height: auto;
+      margin: 0 -10px; 
+      box-sizing: border-box;
+      border-radius: 5px;
+    }
+
+    .content .block code:hover .copy {
+      display: block;
+    }
+
+    .content .block .copy {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      background-color: #5A65EA;
+      color: white;
+      padding: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      background-color: #191B30;
+    }
+    hr-c {
+      border: 2px solid #5A65EA;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://{{cdn}}/prismjs@v1.x/components/prism-core.min.js"></script>
+  <script src="https://{{cdn}}/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+  <div class="container">
+    <h2 style="text-align: center;">How to make a discord bot</h2>
+    <div class="content">
+      <!-- Add your content here -->
+      <div class="block">
+        <p>In this tutorial, you will learn how to create a simple discord bot using <a href="https://python.org">Python</a> and the <cd>discord.py</cd> library.<br><br>
+          <p>You will need a bot account and a Discord server to follow along with this tutorial.<br>If you don't have a Discord server, you can create one now</p>
+      </div>
+      <div class="block">
+        <h2>Setting up your bot account</h2>
+        <p>To create a bot account, you need to go to the <a href="https://discord.com/developers/applications">discord developer portal</a> and create a new application.</p>
+  <img src="bot1.jpg" alt="Create bot account image">
+      </div>
+      <div class="block">
+        <h2>Bot name</h2>
+        <p>Now put a name for your bot. This will be the name that appears in the server list and in the bot's profile. You can also change the bot's avatar and description later.</p>
+        <img src="bot2.jpg" alt="Bot name image">
+
+      </div>
+      <div class="block">
+        <h2>Bot profile</h2>
+        <p>Now you can choose the bot's profile picture and description. You can also change the bot's name and avatar later.</p>
+        <img src="bot3.jpg" alt="Bot profile image">
+      </div>
+      <div class="block">
+        <h2>Enable Intents</h2>
+        <p>Now that you have your bot account set up, you need to enable the bot to access the necessary intents.<br><br>Intents are a way to specify what the bot is allowed to do. They are like the bot's <cd>permissions</cd> – they allow the bot to do specific things. For example, the bot needs to be able to read messages and send messages, so it needs the <cd>Read Messages</cd> and <cd>Send Messages</cd> intents.<br><br>To enable intents, go to the <cd>bot</cd> tab, scroll down to the <cd>Privileged Gateway Intents</cd> section, and enable both the <cd>Presence Intent</cd> and the <cd>Server Members Intent</cd> checkboxes. Then hit <cd>Save Changes</cd> to save your changes.</p>
+        <img src="bot4.jpg" alt="Enable intents image">
+      </div>
+      <div class="block">
+        <h2>Bot token</h2>
+        <p>Now that you have your bot account set up and enabled intents, you need to create a bot token. Go to the <cd>bot</cd> tab, and click the <cd>Reset Token</cd> button. This will generate a new token for your bot, which you can use to authenticate your bot to the Discord API. Remember to save this token securely, as it is your bot's password and is the only way to interact with your bot.</p>
+        <img src="bot5.jpg" alt="Bot token image">
+      </div>
+      <div class="block">
+        <h2>Bringing your bot to life</h2>
+        <p>Now, you can start coding your bot! To start coding your bot, you need to install the <cd>discord.py</cd> library. You can do this by running the following command in your terminal or command prompt:</p>
+        <code>pip install discord.py</code>
+        <p>Once you have installed the library, you can start coding your bot.</p>
+      </div>
+      <div class="block">
+        <h2>Code the bot</h2>
+        <p>Now, you need to create a <cd>main.py</cd> file on your python project.</p><br><br>
+        <p>In your <cd>main.py</cd> file, you need to import the <cd>discord.py</cd> library and create a new bot instance.</p>
+        <pre>
+        <code>
+import discord
+from discord.ext import commands
+          
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+        </code>
+        </pre>
+        <p>Now, you need to create a event listener for the <cd>on_ready</cd> event. This event is called when the bot is ready (online)</p>
+        <pre>
+          <code>
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user.name}')
+
+          </code>
+        </pre>
+        <p>Now, you need to create a command for your bot. To create a command, you need use the <cd>@bot.command()</cd> decorator above a function. This decorator tells the bot that this function is a command.</p><br>
+        <p>The function should take <cd>ctx</cd> (contex) as its first parameter, representing the invocation context</p><br><br>
+        <p>For example, let's create a command that when user sends <cd>!hello</cd> the bot responds with <cd>Hello, world!</cd></p>
+        <pre>
+          <code class="lang-python">
+@bot.command()
+async def hello(ctx):
+    await ctx.send("Hello, world!")
+          </code>
+        </pre>
+        <p>Now, you need to run your bot. To run your bot, you need to use the <cd>bot.run()</cd> method. This method takes your bot token as its argument, which you can get from the Discord Developer Portal.</p>
+        <pre>
+          <code class="lang-python">
+bot.run('YOUR_BOT_TOKEN')
+          </code>
+        </pre>
+        <p>Now, you can run your bot and test it out. To test your bot, you need to invite the bot to your server.<br>To add the bot to your server, you need to have the <cd>Manage Server</cd> permission.<br>Then you go to the <a href="https://discord.com/developers/applications">Discord Developer Portal</a> and click on the <cd>OAuth2</cd> tab. Then, you need to select the <cd>bot</cd> scope and the <cd>Send Messages</cd> permission. Then, you can copy the link that appears and paste it in your browser to invite the bot. Once you have invited the bot, you can start chatting with it in your server.</p>
+      </div>
+        <div class="block">
+          <h2>Message Events</h2>
+          <p>If you want to create event that listens to messages, you need to use the <cd>on_message</cd> event. This event is called when a message is sent in a server or a DM. You can use the <cd>message.content</cd> property to get the content of the message.</p>
+          <pre>
+            <code class="lang-python">
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return  # Ignore messages from the bot itself
+
+    if message.content.startswith('!hello'):
+       await message.channel.send('Hello!')
+            </code>
+          </pre>
+        </div>
+        <div class="block">
+          <h2>User joins server event</h2>
+          <p>If you want to create event that listens to user joins server, you need to use the <cd>on_member_join</cd> event. This event is called when a user joins a server.
+            <pre>
+              <code>
+@bot.event
+async def on_member_join(member):
+    welcome_channel_id = 123456789012345678  # Replace with your welcome channel ID
+    welcome_channel = bot.get_channel(welcome_channel_id)
+
+    if welcome_channel:
+        await welcome_channel.send(f'Welcome, {member.mention}!')
+
+
+              </code>
+            </pre>
+        </div>
+        <div class="block">
+          <p>If you wanna learn more, join our <a href="https://discord.gg/QrF3q9kHPu">Server</a></p>
+<p>Subscribe to <a href="https://youtube.com/@HaruYT600">@Haru</a> on YouTube</p>
+        </div>
+  </div>
+  <script>
+    function copyCode(button) {
+      let code = button.previousSibling;
+      let range = document.createRange();
+      range.selectNode(code);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+    }
+  </script>
+</body>
+</html>
