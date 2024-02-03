@@ -1,28 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Website</title>
-  <style>
-    /* Your CSS styles go here */
-    body {
-      font-family: Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+        }
 
-    h1 {
-      color: #007bff;
-    }
-  </style>
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #button {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body>
+    <div id="container">
+        <div id="button"></div>
+    </div>
+    <script>
+        // Get the button element
+        var button = document.getElementById("button");
 
-  <h1>Hello, World!</h1>
+        // Define the speed and direction of the button movement
+        var speed = 10; // pixels per frame
+        var dx = 0; // horizontal direction
+        var dy = 0; // vertical direction
 
-  <script>
-    // Your JavaScript code goes here
-    alert('Welcome to your website!');
-  </script>
+        // Define the boundaries of the container
+        var container = document.getElementById("container");
+        var minX = 0;
+        var maxX = container.offsetWidth - button.offsetWidth;
+        var minY = 0;
+        var maxY = container.offsetHeight - button.offsetHeight;
 
+        // Define a function to move the button
+        function moveButton() {
+            // Get the current position of the button
+            var x = button.offsetLeft;
+            var y = button.offsetTop;
+
+            // Update the position based on the speed and direction
+            x += dx * speed;
+            y += dy * speed;
+
+            // Check if the button reaches the edges of the container
+            if (x < minX) {
+                x = minX;
+            }
+            if (x > maxX) {
+                x = maxX;
+            }
+            if (y < minY) {
+                y = minY;
+            }
+            if (y > maxY) {
+                y = maxY;
+            }
+
+            // Set the new position of the button
+            button.style.left = x + "px";
+            button.style.top = y + "px";
+
+            // Request the next animation frame
+            requestAnimationFrame(moveButton);
+        }
+
+        // Start the animation loop
+        requestAnimationFrame(moveButton);
+
+        // Define a function to handle the keydown event
+        function handleKeydown(event) {
+            // Get the key code
+            var keyCode = event.keyCode;
+
+            // Set the direction based on the key code
+            switch (keyCode) {
+                case 37: // left arrow
+                    dx = -1;
+                    break;
+                case 38: // up arrow
+                    dy = -1;
+                    break;
+                case 39: // right arrow
+                    dx = 1;
+                    break;
+                case 40: // down arrow
+                    dy = 1;
+                    break;
+            }
+        }
+
+        // Define a function to handle the keyup event
+        function handleKeyup(event) {
+            // Get the key code
+            var keyCode = event.keyCode;
+
+            // Reset the direction based on the key code
+            switch (keyCode) {
+                case 37: // left arrow
+                    dx = 0;
+                    break;
+                case 38: // up arrow
+                    dy = 0;
+                    break;
+                case 39: // right arrow
+                    dx = 0;
+                    break;
+                case 40: // down arrow
+                    dy = 0;
+                    break;
+            }
+        }
+
+        // Add event listeners for the keydown and keyup events
+        document.addEventListener("keydown", handleKeydown);
+        document.addEventListener("keyup", handleKeyup);
+    </script>
 </body>
 </html>
