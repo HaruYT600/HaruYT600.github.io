@@ -1,0 +1,190 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #262744;
+            font-family: 'uni sans serif', sans-serif;
+            color: white;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px solid #191B30;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-top: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .plans {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .plan {
+            width: 48%;
+            min-width: 300px;
+            margin: 10px;
+            padding: 20px;
+            background-color: #191B30;
+            border: 2px solid #5A65EA;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .plan:hover {
+            transform: scale(1.05);
+        }
+
+        .plan h2 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .plan ul {
+            list-style: none;
+        }
+
+        .plan li {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .plan li span {
+            margin-right: 10px;
+        }
+
+        .plan button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #5A65EA;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        .plan button:hover {
+            background-color: #6A75FA;
+        }
+        .play button:disabled {
+            background-color: #2D3275;
+            cursor: not-allowed;
+            color: #808080;
+        }
+       .notification {
+         position: relative;
+         top: 0;
+         left: 0;
+         width: 100%;
+         background-color: #f44336;
+         color: white;
+         padding: 15px;
+         z-index: 1000; /* Ensure it's above other elements */
+       }
+
+       /* CSS for close button */
+       .close {
+         position: absolute;
+         top: 0;
+         right: 0;
+         color: white;
+         font-size: 20px;
+         font-weight: bold;
+         padding: 15px;
+         cursor: pointer;
+       }
+    </style>
+</head>
+<body>
+  <div class="notification">
+    Happy lunar new year from the L.I.U.B team! 🐲🧧
+    <span class="close" onclick="this.parentElement.style.display='none';">&times;</span>
+  </div>
+    <div class="container">
+        <div class="header">
+            <img src="liub-icon.png" alt="L.I.U.B icon">
+            <h1>L.I.U.B Premium</h1>
+            <p>Upgrade your discord bot experience with L.I.U.B premium plans.</p>
+        </div>
+        <div class="plans">
+            <div class="plan">
+                <h2>FREE</h2>
+                <ul>
+                    <li><span>✅</span> Basic features</li>
+                    <li><span>❌</span> Advanced features</li>
+                    <li><span>❌</span> Premium commands</li>
+                    <li><span>❌</span> Exclusive commands</li>
+                </ul>
+                <button disabled>ACTIVE</button>
+            </div>
+            <div class="plan">
+                <h2>$9,99/Month</h2>
+                <ul>
+                    <li><span>✅</span> Basic features</li>
+                    <li><span>✅</span> Advanced features</li>
+                    <li><span>❌</span> Premium commands</li>
+                    <li><span>❌</span> Exclusive commands</li>
+                </ul>
+                <button>Buy Now</button>
+            </div>
+            <div class="plan">
+                <h2>$20/Year</h2>
+                <ul>
+                    <li><span>✅</span> Basic features</li>
+                    <li><span>✅</span> Advanced features</li>
+                    <li><span>✅</span> Premium commands</li>
+                    <li><span>❌</span> Exclusive commands</li>
+                </ul>
+                <button>Buy Now</button>
+            </div>
+            <div class="plan">
+                <h2>$99,99/Year</h2>
+                <ul>
+                    <li><span>✅</span> Basic features</li>
+                    <li><span>✅</span> Advanced features</li>
+                    <li><span>✅</span> Premium commands</li>
+                    <li><span>✅</span> Exclusive commands</li>
+                </ul>
+                <button>Buy Now</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
