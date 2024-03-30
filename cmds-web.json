@@ -1,0 +1,164 @@
+{
+  ".afk": {
+    "category": "Fun",
+    "description": "Sets your status to 'Away From Keyboard' with an optional message",
+    "usage": ".afk [message]",
+    "example": ".afk Making a coffee ☕️"
+  },
+  ".hug": {
+    "category": "Fun",
+    "description": "Sends a virtual hug to the mentioned user",
+    "usage": ".hug <user>",
+    "example": ".hug @friend"
+  },
+  ".kiss": {
+    "category": "Fun",
+    "description": "Sends a virtual kiss to the mentioned user",
+    "usage": ".kiss <user>",
+    "example": ".kiss @partner"
+  },
+  ".lick": {
+    "category": "Fun",
+    "description": "Sends a virtual lick to the mentioned user",
+    "usage": ".lick <user>",
+    "example": ".lick @cat"
+  },
+  ".bite": {
+    "category": "Fun",
+    "description": "Sends a virtual bite to the mentioned user",
+    "usage": ".bite <user>",
+    "example": ".bite @friend"
+  },
+  ".slap": {
+    "category": "Fun",
+    "description": "Sends a virtual slap to the mentioned user",
+    "usage": ".slap <user>",
+    "example": ".slap @annoying_person"
+  },
+  ".howtall": {
+    "category": "Fun",
+    "description": "Generates a random height for the mentioned user",
+    "usage": ".howtall <user>",
+    "example": ".howtall @friend"
+  },
+  ".hot": {
+    "category": "Fun",
+    "description": "Generates a random 'hotness' level for the mentioned user",
+    "usage": ".hot <user>",
+    "example": ".hot @crush"
+  },
+  ".bitches": {
+    "category": "Fun",
+    "description": "Generates a random number of imaginary bitches for the mentioned user",
+    "usage": ".bitches <user>",
+    "example": ".bitches @player"
+  },
+  ".howcool": {
+    "category": "Fun",
+    "description": "Generates a random 'coolness' level for the mentioned user",
+    "usage": ".howcool <user>",
+    "example": ".howcool @friend"
+  },
+  ".roll": {
+    "category": "Fun",
+    "description": "Rolls a virtual dice with the specified number of sides",
+    "usage": ".roll <number of sides>",
+    "example": ".roll 6"
+  },
+  ".fuck": {
+    "category": "Fun",
+    "description": "Sends a Fun message or action",
+    "usage": ".fuck <user>",
+    "example": ".fuck @partner"
+  },
+  ".fatrate": {
+    "category": "Fun",
+    "description": "Generates a random 'fatness' rating for the mentioned user",
+    "usage": ".fatrate <user>",
+    "example": ".fatrate @friend"
+  },
+  ".8ball": {
+    "category": "Fun",
+    "description": "Consults the mystical 8-ball for an answer to a yes/no question",
+    "usage": ".8ball <question>",
+    "example": ".8ball Will I pass my exam?"
+  },
+  ".spit": {
+    "category": "Fun",
+    "description": "Sends a virtual spit towards the mentioned user",
+    "usage": ".spit <user>",
+    "example": ".spit @enemy"
+  },
+  ".roast": {
+    "category": "Fun",
+    "description": "Generates a random roast directed at the mentioned user",
+    "usage": ".roast <user>",
+    "example": ".roast @friend"
+  },
+  ".truth": {
+    "category": "Fun",
+    "description": "Asks the mentioned user to reveal a truth about themselves",
+    "usage": ".truth <user>",
+    "example": ".truth @friend"
+  },
+  ".dare": {
+    "category": "Fun",
+    "description": "Challenges the mentioned user to perform a dare",
+    "usage": ".dare <user>",
+    "example": ".dare @friend"
+  },
+  ".wouldyourather": {
+    "category": "Fun",
+    "description": "Presents a 'Would You Rather' question for the mentioned user to answer",
+    "usage": ".wouldyourather <user>",
+    "example": ".wouldyourather @friend"
+  },
+  ".neverhaveiever": {
+    "category": "Fun",
+    "description": "Starts a 'Never Have I Ever' game",
+    "usage": ".neverhaveiever",
+    "example": ".neverhaveiever"
+  },
+  ".iq": {
+    "category": "Fun",
+    "description": "Generates a random IQ score for the mentioned user",
+    "usage": ".iq <user>",
+    "example": ".iq @friend"
+  },
+  ".pp": {
+    "category": "Fun",
+    "description": "Generates a random length for the mentioned user's PP (Pee Pee)",
+    "usage": ".pp <user>",
+    "example": ".pp @friend"
+  },
+  ".gay": {
+    "category": "Fun",
+    "description": "Generates a random 'gayness' level for the mentioned user",
+    "usage": ".gay <user>",
+    "example": ".gay @friend"
+  },
+  ".hug": {
+    "category": "Fun",
+    "description": "Sends a virtual hug to the mentioned user",
+    "usage": ".hug <user>",
+    "example": ".hug @friend"
+  },
+  ".addemoji": {
+    "category": "Fun",
+    "description": "Adds a custom emoji to the server",
+    "usage": ".addemoji <emoji>",
+    "example": ".addemoji <emoji>"
+  },
+  ".addmultiple": {
+    "category": "Fun",
+    "description": "Adds multiple custom emojis to the server",
+    "usage": ".addmultiple <emoji1>...",
+    "example": ".addmultiple emoji <emoji> x10"
+  },
+  ".enlarge": {
+    "category": "Fun",
+    "description": "Enlarges a emoji",
+    "usage": ".enlarge <emoji>",
+    "example": ".enlarge :kitty:"
+  }
+}
