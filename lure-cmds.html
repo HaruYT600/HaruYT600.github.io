@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="See all Lure bot commands">
+  <meta name="keywords" content="Lure, Lure bot, Lure bot commands, Lure bot commands discord, discord, discord bot, haruyt600, yokai, yokaii, discord bot commands">
+  <meta name="author" content="Lure bot">
+  <meta name="theme-color" content="#000000">
+  <meta name="title" content="Lure bot commands">
+  <meta name="og:image" content="https://cdn.discordapp.com/attachments/1188588035806335067/1223637213120565248/5ad6bc5d4e30a1070d1f8624794413fc.jpg">
+  <title>Lure - Commands</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0F0C20;
+      color: white;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    .section {
+      background-color: #181529;
+      transition: opacity 0.5s, transform 0.5s;
+      border-radius: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
+      border-left: 3px solid white;
+      justify-content: center;
+      margin: 40px;
+      padding: 6px;
+    }
+
+    .section.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .section:hover {
+      transform: translateY(-5px);
+      border-left: 3px solid #0054FF;
+      border: 2px solid #0054FF;
+    }
+    .section:hover h2 {
+      color: #0054FF;
+    }
+    .section p {
+      color: white;
+    }
+    .section h2 {
+      color: white;
+    }
+    h2 {
+      color: white;
+      text-align: center;
+    }
+    p {
+      padding: 10px;
+      color: white;
+      margin-bottom: 0;
+      text-align: center;
+      vertical-align: -30px;
+    }
+    header {
+      background-color: #0D0925;
+      border-bottom: 2px solid white;
+      text-align: center;
+      item-align: center;
+      font-size: 16px;
+      width: 100%;
+      padding: 1px;
+    }
+    .pfp {
+      border-radius: 50%;
+      overflow: hidden;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px white;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+    emj {
+        display: inline-block;
+        width: 2em;
+        height: 2em;
+        background-image: url('bot.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        vertical-align: middle;
+    }
+    i {
+      display: inline-block;
+      width: 3em;
+      height: 3em;
+      background-image: url('i.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      vertical-align: middle;
+    }
+    i::after {
+      content: "Usage: .stfu <user>";
+      white-space: pre;
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #181529;
+      color: white;
+      padding: 5px;
+      border-radius: 5px;
+      border: 2px solid white;
+    }
+
+    i:hover::after {
+      display: block;
+    }
+    .line {
+      color: black;
+      border-bottom: 2px solid white;
+    }
+    ctgr {
+      background-color: #880B34;
+      color: white;
+      border-radius: 5px;
+      border: 1px solid #FF003F;
+      padding: 3px;
+      line-height: 3;
+    }
+    desc {
+        color: #DDDEE1;
+        border-radius: 5px;
+        padding: 3px;
+        line-height: 1;
+    }
+    cmd {
+        display: inline-block;
+        width: 2em;
+        height: 2em;
+        background-image: url('cmd.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        vertical-align: middle;
+    }
+    code {
+      background-color: #140F30;
+    }
+    #js-warning {
+        display: none;
+        color: red;
+        font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <p id="js-warning">JavaScript is disabled in your browser. Please enable JavaScript to view this site.</p>
+  </noscript>
+  <header><h2 style="margin-top: 10px; background-image: linear-gradient(to right, #ff8a00, #e52e71); -webkit-background-clip: text; background-clip: text; color: transparent;">Lure COMMANDS</h2></header>
+  <div class="container">
+  <img src="lure-pfp.png" class="pfp" alt="Lure PFP">
+  </div>
+  <h2>lure <span style="color: #A8AAB3;">#1433</span><emj></emj></h2>
+<div id="commands-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const sections = document.querySelectorAll('.section');
+
+      window.addEventListener('scroll', function () {
+        sections.forEach(section => {
+          const bounding = section.getBoundingClientRect();
+          if (bounding.top >= 0 && bounding.bottom <= window.innerHeight) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+
+      // Trigger scroll event initially to check the visibility of sections
+      window.dispatchEvent(new Event('scroll'));
+    });
+  </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    fetch('cmds-web.json')
+      .then(response => response.json())
+      .then(data => {
+        const commandsContainer = document.getElementById('commands-container');
+        Object.keys(data).forEach(key => {
+          const cmd = data[key];
+          const div = document.createElement('div');
+          div.className = 'section';
+          div.id = key;
+          div.innerHTML = `
+            <h2>${key}</h2>
+            <p><strong>CATEGORY </strong> <ctgr> ${cmd.category} </ctgr><br><strong>DESCRIPTION</strong><br><desc><q>${cmd.description}</q></desc><br><strong>USAGE</strong> <code>${cmd.usage}</code><br><strong>EXAMPLE</strong> <code>${cmd.example}</code></p>
+          `;
+          commandsContainer.appendChild(div);
+        });
+      })
+      .catch(error => console.error('Error fetching commands:', error));
+  });
+</script>
+
+</body>
+</html>
