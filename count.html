@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visit Counter</title>
+    <style>
+        body {
+            background-color: #0F1014;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .visits {
+            font-size: 48px;
+        }
+    </style>
+</head>
+<body>
+    <div class="visits" id="visitCount">VISITS: 0</div>
+
+    <script>
+        // Function to animate count
+        function animateCount(targetCount, duration) {
+            const visitCountElement = document.getElementById('visitCount');
+            const startingCount = parseInt(visitCountElement.textContent.match(/\d+/)[0]);
+            const increment = Math.ceil((targetCount - startingCount) / duration); // Increase count by 1 per millisecond
+            let currentCount = startingCount;
+            const interval = setInterval(() => {
+                currentCount += increment;
+                if ((increment > 0 && currentCount >= targetCount) || (increment < 0 && currentCount <= targetCount)) {
+                    clearInterval(interval);
+                    currentCount = targetCount;
+                }
+                visitCountElement.textContent = `VISITS: ${currentCount.toLocaleString()}`;
+            }, 1);
+        }
+
+        // Function to get and display count
+        function getCount() {
+            fetch('/count')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const count = data.value;
+                    animateCount(count, 1); // Animate count from current count to new count in 1 second
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        // Function to continuously update count
+        setInterval(() => {
+            getCount();
+        }, 5000); // Update every 5 seconds
+
+        // Initial call to get and display count when the page loads
+        getCount();
+    </script>
+</body>
+</html>
