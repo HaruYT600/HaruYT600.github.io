@@ -277,6 +277,20 @@
       document.getElementById("warningPopup").style.display = "none";
     }
   </script>
+  <script>
+document.addEventListener('keydown', function(event) {
+  if ((event.key === "F12") || (event.ctrlKey && event.shiftKey && event.key === "I") || (event.ctrlKey && event.altKey && event.key === "I")) {
+    // Close the current tab/window
+    window.close();
+  }
+});
+
+document.addEventListener('contextmenu', function(event) {
+  // Close the current tab/window when right-clicked
+  window.close();
+  event.preventDefault(); // Prevent the default context menu from appearing
+});
+</script>
 </body>
 
 </html>
