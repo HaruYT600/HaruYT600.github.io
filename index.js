@@ -5,8 +5,6 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to serve static files from the public directory
-app.use(express.static('public'));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -25,7 +23,7 @@ app.get('/hm', (req, res) => {
                 console.error(err);
                 return res.status(500).send('Error writing to count.json');
             }
-            res.sendFile(__dirname + '/public/count.html');
+            res.sendFile(__dirname + 'count.html');
         });
     });
 });
