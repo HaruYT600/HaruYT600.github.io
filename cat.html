@@ -3,22 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Cursor</title>
+    <title>Kit Runs Away</title>
     <style>
         body {
-            cursor: url('IMG_7452.png'), auto; /* Fallback to default cursor if image is not found */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+        #kit {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('kit.png');
+            background-size: cover;
+            transition: transform 0.5s;
         }
     </style>
 </head>
 <body>
-    <h1>Custom Cursor Example</h1>
-    <p>Move your cursor around to see the custom cursor effect.</p>
+    <div id="kit"></div>
 
     <script>
-        // Ensure the custom cursor works across all elements by applying the cursor style dynamically
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.body.style.cursor = "url('IMG_7452.png'), auto";
+        const kit = document.getElementById('kit');
+        const threshold = 150; // distance in pixels to start running away
+        let isRunning = false;
+
+        document.addEventListener('mousemove', (event) => {
+            const rect = kit.getBoundingClientRect();
+            const kitX = rect.left + rect.width / 2;
+            const kitY = rect.top + rect.height / 2;
+            const distance = Math.hypot(event.clientX - kitX, event.clientY - kitY);
+
+            if (distance < threshold && !isRunning) {
+                runAway(event.clientX, event.clientY);
+            }
         });
+
+        function runAway(cursorX, cursorY) {
+            isRunning = true;
+            kit.style.backgroundImage = "url('kit_running.png')";
+
+            const { offsetWidth: width, offsetHeight: height } = document.body;
+            let newX, newY;
+
+            do {
+                newX = Math.random() * (width - kit.offsetWidth);
+                newY = Math.random() * (height - kit.offsetHeight);
+            } while (Math.hypot(cursorX - newX, cursorY - newY) < threshold);
+
+            const angle = Math.atan2(newY - kit.offsetTop, newX - kit.offsetLeft);
+            const distance = Math.hypot(newX - kit.offsetLeft, newY - kit.offsetTop);
+            const duration = distance / 400; // speed: 400px/s
+
+            kit.style.transition = `transform ${duration}s linear`;
+            kit.style.transform = `translate(${newX}px, ${newY}px)`;
+
+            setTimeout(() => {
+                kit.style.transition = '';
+                kit.style.transform = '';
+                kit.style.left = `${newX}px`;
+                kit.style.top = `${newY}px`;
+                kit.style.backgroundImage = "url('kit.png')";
+                isRunning = false;
+            }, duration * 1000);
+        }
     </script>
 </body>
 </html>
