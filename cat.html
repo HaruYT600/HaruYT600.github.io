@@ -3,107 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Bot</title>
+    <title>Custom Cursor</title>
     <style>
         body {
-            background-color: white;
-            color: black;
-            font-family: 'Uni Sans', sans-serif;
-            overflow: hidden;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-        #cat {
-            position: absolute;
-            width: 100px;
-            height: auto;
-            transition: transform 0.3s ease;
+            cursor: url('img.png'), auto; /* Fallback to default cursor if image is not found */
         }
     </style>
 </head>
 <body>
-    <img id="cat" src="cat.png" alt="Cat">
+    <h1>Custom Cursor Example</h1>
+    <p>Move your cursor around to see the custom cursor effect.</p>
 
     <script>
-        const cat = document.getElementById('cat');
-        let catState = 'normal'; // Tracks the cat's current state
-        const catImages = {
-            normal: 'cat.png',
-            left: 'cat_left.png',
-            sleep: 'cat_sleep.png',
-            smile: 'cat_smile.png'
-        };
-
-        // Function to move the cat randomly
-        function moveCat() {
-            if (catState !== 'sleep') {
-                const newX = Math.random() * (window.innerWidth - cat.width);
-                const newY = Math.random() * (window.innerHeight - cat.height);
-                cat.style.transform = `translate(${newX}px, ${newY}px)`;
-                if (newX < window.innerWidth / 2) {
-                    cat.src = catImages.left; // Cat looks left
-                } else {
-                    cat.src = catImages.normal; // Cat looks right
-                }
-            }
-        }
-
-        // Function to make the cat sleep
-        function sleepCat() {
-            cat.src = catImages.sleep;
-            catState = 'sleep';
-            setTimeout(() => {
-                catState = 'normal';
-                cat.src = catImages.normal;
-                randomAction();
-            }, 3000); // Sleeps for 3 seconds
-        }
-
-        // Function to make the cat follow the cursor
-        function followCursor(event) {
-            if (catState !== 'sleep') {
-                cat.style.transform = `translate(${event.clientX - cat.width / 2}px, ${event.clientY - cat.height / 2}px)`;
-                cat.src = catImages.normal;
-            }
-        }
-
-        // Function to handle cat clicks
-        function handleCatClick() {
-            cat.src = catImages.smile;
-            catState = 'smile';
-            setTimeout(() => {
-                catState = 'normal';
-                cat.src = catImages.normal;
-                randomAction();
-            }, 1000); // Smiles for 1 second
-        }
-
-        // Function to execute a random action
-        function randomAction() {
-            if (catState === 'normal') {
-                const actions = [moveCat, sleepCat];
-                const randomAction = actions[Math.floor(Math.random() * actions.length)];
-                randomAction();
-                setTimeout(randomAction, Math.random() * 5000 + 2000); // Random delay between 2 to 7 seconds
-            }
-        }
-
-        // Initialize the cat's actions
-        randomAction();
-
-        // Event listener for cursor follow
-        window.addEventListener('mousemove', (event) => {
-            if (Math.random() < 0.2 && catState === 'normal') { // 20% chance to follow the cursor
-                followCursor(event);
-            }
+        // Ensure the custom cursor works across all elements by applying the cursor style dynamically
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.body.style.cursor = "url('img.png'), auto";
         });
-
-        // Event listener for cat click
-        cat.addEventListener('click', handleCatClick);
     </script>
 </body>
 </html>
