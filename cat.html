@@ -13,6 +13,7 @@
             align-items: center;
             background-color: #f0f0f0;
             overflow: hidden;
+            position: relative;
         }
         #kit {
             position: absolute;
@@ -48,12 +49,19 @@
             kit.style.backgroundImage = "url('Untitled624_20240522215747.png')";
 
             const { offsetWidth: width, offsetHeight: height } = document.body;
+            const kitWidth = kit.offsetWidth;
+            const kitHeight = kit.offsetHeight;
+
             let newX, newY;
 
             do {
-                newX = Math.random() * (width - kit.offsetWidth);
-                newY = Math.random() * (height - kit.offsetHeight);
+                newX = Math.random() * (width - kitWidth);
+                newY = Math.random() * (height - kitHeight);
             } while (Math.hypot(cursorX - newX, cursorY - newY) < threshold);
+
+            // Ensure newX and newY are within the viewport
+            newX = Math.min(Math.max(newX, 0), width - kitWidth);
+            newY = Math.min(Math.max(newY, 0), height - kitHeight);
 
             const angle = Math.atan2(newY - kit.offsetTop, newX - kit.offsetLeft);
             const distance = Math.hypot(newX - kit.offsetLeft, newY - kit.offsetTop);
