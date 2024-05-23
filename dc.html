@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>User Information</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Uni Sans Serif', sans-serif;
+            background-color: white;
+            color: black;
+        }
+        .info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .info img {
+            border-radius: 50%;
+            width: 2em;
+            height: 2em;
+            margin-right: 0.5em;
+        }
+        b {
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="info-container"></div>
+    <br>
+    <hr>
+    <h1>This is just public info</h1>
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const dn = params.get('dn');
+            const us = params.get('us');
+            const ic = params.get('ic');
+            const id = params.get('id');
+            const cd = params.get('cd');
+            return { dn, us, ic, id, cd };
+        }
+
+        function base64Decode(str) {
+            try {
+                return decodeURIComponent(atob(str).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function displayInfo(dn, us, ic, id, cd) {
+            const content = `
+                <div class="info">
+                    <img src="${ic}" alt="Profile Image">
+                    <span>Your name is: <b>${dn}</b> and username <b>${us}</b>.</span>
+                </div>
+                <div>Your ID is <b>${id}</b>.</div>
+                <div>You created your discord account on <b>${cd}</b>.</div>
+            `;
+            const dcinfo = `
+            <h1>Discord Info</h1>
+            <hr>`;
+            const jspublic = `
+            <hr>
+            <h1>This is only public information</h1>`;
+
+            document.body.innerHTML = dcinfo + document.body.innerHTML;
+            document.getElementById('info-container').innerHTML = content;
+
+            
+        }
+
+        function init() {
+            const { dn, us, ic, id, cd } = getQueryParams();
+            if (!dn || !us || !ic || !id || !cd) return;
+
+            const decodedDn = base64Decode(dn);
+            const decodedUs = base64Decode(us);
+            const decodedIc = base64Decode(ic);
+            const decodedId = base64Decode(id);
+            const decodedCd = base64Decode(cd);
+
+            if (decodedDn && decodedUs && decodedIc && decodedId && decodedCd) {
+                displayInfo(decodedDn, decodedUs, decodedIc, decodedId, decodedCd);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
