@@ -1,304 +1,820 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kit Clicker</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="/manifest.json">
+      <meta name="theme-color" content="#0F1014">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <meta name="apple-mobile-web-app-title" content="HaruYT600">
+      <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-startup-image" href="splash.png">
+    <title>PIXXALS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Uni Sans', sans-serif;
+            background-color: #0F1014;
+            color: #A4A9C5;
+        }
 
-    body {
-      font-family: 'Press Start 2P', sans-serif; /* Pixel-like font */
-      background-image: url('IMG_7453.png');
-      background-size: cover;
-      background-repeat: repeat;
-      margin: 0;
-      overflow: hidden;
-    }
+        header {
+            background-image: url('header.png');
+            background-size: cover;
+            background-color: #08090C;
+            padding: 20px;
+            text-align: center;
+        }
 
-    .coin-balance {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      background-color: black;
-      border-radius: 10px;
-      padding: 5px;
-      z-index: 1;
-    }
+        header h1 {
+            margin: 0;
+            color: url('header.png');
+            font-family: 'Luckiest Guy', cursive;
+        }
 
-    .coin-balance img {
-      width: 30px;
-      height: 30px;
-    }
-
-    .coin-balance span {
-      color: white;
-      font-size: 20px;
-      margin-left: 10px;
-    }
-
-    .kit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .kit:hover {
-      transform: translate(-50%, -50%) scale(1.1);
-    }
-
-    .kit:active {
-      transform: translate(-50%, -50%) scale(0.9);
-    }
-
-    .coin-animation {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 30px;
-      height: 30px;
-      color: white;
-      font-size: 20px;
-      animation: move 1s ease-in-out;
-      z-index: 1;
-    }
-
-    @keyframes move {
-      0% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-        top: 20px;
-        left: calc(100% - 80px);
-      }
-    }
-
-    .tittle {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      border-radius: 10px;
-      padding: 5px;
-      z-index: 1;
-    }
-
-    /* Additional styles for the rating popup */
-    .rating-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 20px;
-      background-color: white;
-      border-radius: 10px;
-      text-align: center;
-      z-index: 2;
-    }
-
-    .rating-stars {
-      margin: 10px;
-    }
-
-    .rating-submit {
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    /* Additional styles for the warning popup */
-    .warning-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 20px;
-      background-color: yellow;
-      border-radius: 10px;
-      text-align: center;
-      z-index: 2;
-    }
-    .fttr {
-      position: absolute;
-      top: 20px;
-      bottom: 20px;
-      display: flex;
-      align-items: center;
-      border-radius: 10px;
-      padding: 5px;
-      z-index: 1;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="coin-balance">
-    <img src="IMG_7452.png" alt="Coin logo">
-    <span id="balance">0</span>
-  </div>
-  <div class="tittle">
-    <h3 style="color: white;">Kit clicker</h3>
-    <br>
-
-  </div>
-  <img src="IMG_7455.png" alt="Kit" class="kit" onclick="handleClick()">
-  <!-- Rating Popup -->
-  <div class="rating-popup" id="ratingPopup">
-    <p>Do you enjoy Kit Clicker?</p>
-    <div class="rating-stars">
-      <span onclick="submitRating(1)">★</span>
-      <span onclick="submitRating(2)">★</span>
-      <span onclick="submitRating(3)">★</span>
-      <span onclick="submitRating(4)">★</span>
-      <span onclick="submitRating(5)">★</span>
-    </div>
-    <button class="rating-submit" onclick="closeRatingPopup()">Submit</button>
-  </div>
-  <!-- Warning Popup -->
-  <div class="warning-popup" id="warningPopup">
-    <p>Slow down, turbo-clicker! Something fishy is going on! 🐠</p>
-    <button onclick="closeWarningPopup()">Got it!</button>
-  </div>
-  <script>
-    let balance = document.getElementById("balance");
-    let kit = document.querySelector(".kit");
-    let currentBalance = localStorage.getItem("balance") || 0;
-    let lastClickTime = 0;
-
-    balance.textContent = formatNumber(currentBalance);
-
-    function addCoin() {
-      currentBalance++;
-      localStorage.setItem("balance", currentBalance);
-      balance.textContent = formatNumber(currentBalance);
-
-      let coin = document.createElement("div");
-      coin.classList.add("coin-animation");
-      coin.textContent = "+1";
-      document.body.appendChild(coin);
-
-      setTimeout(function () {
-        document.body.removeChild(coin);
-        checkCoinBalanceForRating();
-      }, 1000);
-    }
-
-    function formatNumber(num) {
-      if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + "M";
-      } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + "k";
-      } else {
-        return num;
-      }
-    }
-
-    function checkCoinBalanceForRating() {
-      if (
-        currentBalance === 100 ||
-        currentBalance === 1000 ||
-        currentBalance === 5000 ||
-        currentBalance === 10000
-      ) {
-        showRatingPopup();
-      }
-    }
-
-    function showRatingPopup() {
-      document.getElementById("ratingPopup").style.display = "block";
-    }
-
-    function closeRatingPopup() {
-      document.getElementById("ratingPopup").style.display = "none";
-    }
-
-    function submitRating(stars) {
-      // Replace 'YOUR_DISCORD_WEBHOOK_URL' with your actual webhook URL
-      const webhookUrl = 'https://discord.com/api/webhooks/1185329794997551235/HSr0gyDqK5wnyadrpJWIIneOOqy0r6ewL1p686j2zS8r6koOxDhHStCvS-zVVjOhYWOf';
-
-      const payload = {
-        content: `New Rating! ${stars} stars`,
-      };
-
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to send Discord webhook');
+        @keyframes bounceIn {
+          0% {
+            transform: translate(-50%, -50%) scale(0); /* Start from center with scale 0 */
           }
-        })
-        .catch(error => {
-          console.error('Error sending Discord webhook:', error);
+          50% {
+            transform: translate(-50%, -50%) scale(1.2); /* Scale up */
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1); /* Final scale at center */
+          }
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #0F1014;
+            border-bottom: 1px solid #33363C;
+            margin: 20px 0;
+        }
+
+        .popup-content {
+            background-color: #1C1E22;
+            width: 300px;
+            padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 10px;
+            animation: bounceIn 0.5s ease forwards;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        .pixxal-block {
+            background-color: #1C1E22;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .pixxal-block:hover {
+            background-color: #33363C;
+        }
+
+        .create-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            item-align: center;
+        }
+
+        @keyframes buttonClick {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(0.9);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        .create-button {
+            item-align: center;
+            padding: 10px 20px;
+            background-color: #5862ED;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .crt {
+            transition: all 0.3s ease;
+        }
+
+        .crt:active {
+            transform: scale(0.95);
+        }
+
+        select {
+            padding: 10px 20px;
+            background-color: #33363C;
+            outline: none;
+            border: none;
+            color: white;
+            height: 30px;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+
+        select:focus {
+            outline: none;
+        }
+
+        input {
+            background-color: #33363C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 5px;
+            width: 80%;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .sort-options {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .search-options {
+            text-align: left;
+            margin-bottom: 0;
+            margin-top: -40px;
+            margin-left: 10px;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            item-align: center;
+        }
+
+        a {
+            color: #6CA9F8;
+            text-decoration: none;
+        }
+        footer {
+            position: relative;
+            margin-top: auto;
+            bottom: 0;
+            width: 100%;
+            background-color: #02050F;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        footer p {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #successMessage {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(4, 167, 68, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 3px;
+            animation: slideIn 0.5s ease forwards;
+        }
+        .progressBar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px; /* Height of the progress bar */
+            background-color: #186311; /* Color of the progress bar */
+            animation: progressBar 3s linear forwards; /* Duration of the progress bar animation */
+        }
+        @keyframes progressBar {
+            0% {
+                width: 100%; /* Start position of the progress bar */
+            }
+            100% {
+                width: 0; /* End position of the progress bar */
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        #loadingScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1D1E22; /* Change to match the background color of your website */
+            z-index: 9999;
+            overflow: hidden; /* Ensure the background fills the whole viewport */
+        }
+
+
+        #loadingScreen .bbb {
+            background-color: #1C1E22;
+            width: 300px;
+            padding: 20px;
+            text-align: center;
+            item-align: center;
+            border-radius: 10px;
+        }
+
+        #loadingScreen h2 {
+            margin-top: 0;
+            color: #A4A9C5;
+        }
+
+        #loadingScreen img {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto;
+            display: block;
+            item-align: center;
+            animation: rotateIcon 4s linear infinite;
+        }
+
+        @keyframes rotateIcon {
+            0% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(60deg);
+            }
+            50% {
+                transform: rotate(0deg);
+            }
+            75% {
+                transform: rotate(-60deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        #loadingScreen p {
+            margin-top: 10px;
+            color: #A4A9C5;
+        }
+        .ldng {
+            width: 300px;
+            padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .loader {
+            font-size: 36px;
+            opacity: 0;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+
+        .loader:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+
+        .loader:nth-child(4) {
+            animation-delay: 0.75s;
+        }
+        .hamburger-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+        }
+
+        .dropdown-menu {
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: -300px;l
+            width: 300px;
+            height: 100%;
+            background-color: #121316;
+            transition: left 0.3s ease;
+            z-index: 999;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="popup" style="display: none;">
+<div class="ldng">
+            <h2 style="text-align: center;">Loading...</h2>
+    
+            <p id="loadingTip" style="text-align: center; margin-top: 10px;"></p>
+        </div>
+    </div>
+    <div id="successMessage">
+         <div class="progressBar"></div>
+        Pixxal created successfully!</div>
+
+<header>
+    <h1 style="text-shadow: 2px 2px 0px black;">PIXXALS</h1>
+    <div class="hamburger-icon" onclick="toggleDropdownMenu()">&#9776;</div>
+    <div id="dropdownMenu" class="dropdown-menu">
+        <h3>Content coming soon</h3>
+    </div>
+    <button id="createPixxalBtn" style="background-color: #5862ED; border-radius: 5px; background-image: url('btn.png'); background-size: cover; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 5px;">Create a Pixxal</button>
+</header>
+
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closePopup()">✖</span>
+        <h2 style="text-align: center;">Create a Pixxal!</h2><hr>
+
+        <form id="pixxalForm">
+            <label for="name"><strong>NAME</strong></label><br>
+            <input type="text" id="name" name="pixxal" placeholder="A name for your Pixxal" autocomplete="false" required><br><br>
+            <label for="description"><strong>DESCRIPTION</strong></label><br>
+            <input type="text" id="description" name="description" placeholder="Description about your Pixxal" required><br><br>
+            <label for="color"><strong>COLOR</strong></label><br>
+            <select id="color" name="color">
+                <option value="#1C1E22">None</option>
+                <option value="Red">Red</option>
+                <option value="#FFDD00">Yellow</option>
+                <option value="#007BFF">Blue</option>
+                <option value="#64D820">Green</option>
+                <option value="#9047DE">Purple</option>
+                <option value="#FF6600">Orange</option>
+            </select><br><br>
+            <button type="submit" id="createButton" style="item-align: center; padding: 10px 20px;" class="create-button" disabled>CREATE</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup2">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closePopup2()">✖</span>
+        <h2 style="text-align: center;">Welcome to Pixxals!</h2>
+        <p style="text-align: center;">Here, you can create and share your own Pixxals with the world. You can also view and interact with other Pixxals.</p>
+        <button id="okayBtn" style="background-color: #5862ED; border-radius: 5px; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 5px; item-align: center;" onclick="closePopup2()">Got it!</button>
+    </div>
+</div>
+
+<div class="sort-options">
+    <label for="sort">Sort by:</label>
+    <select id="sort" name="sort">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="az">A-Z</option>
+    </select>
+</div>
+
+<div class="search-options">
+    <input type="text" id="search" placeholder="Search pixxals..." style="width: 30%; margin-top: -20px;">
+    <button onclick="searchPixxals()" style="background-color: #33363C; border-radius: 5px; color: white; padding: 10px 10px; border: none; cursor: pointer; margin-top: 2px;">🔍</button>
+</div><hr>
+    
+<div id="pixxalsContainer"></div>
+
+
+<script>
+    // Function to calculate relative time
+    function timeAgo(dateString) {
+        const currentDate = new Date();
+        const date = new Date(dateString);
+        const difference = currentDate - date;
+
+        const seconds = Math.floor(difference / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const weeks = Math.floor(days / 7);
+        const months = Math.floor(days / 30);
+        const years = Math.floor(days / 365);
+
+        if (years > 0) {
+            return years === 1 ? "1 year ago" : `${years} years ago`;
+        } else if (months > 0) {
+            return months === 1 ? "1 month ago" : `${months} months ago`;
+        } else if (weeks > 0) {
+            return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+        } else if (days > 0) {
+            return days === 1 ? "1 day ago" : `${days} days ago`;
+        } else if (hours > 0) {
+            return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+        } else if (minutes > 0) {
+            return minutes === 1 ? "1 minute ago" : `${minutes} minutes ago`;
+        } else {
+            return seconds === 1 ? "1 second ago" : `${seconds} seconds ago`;
+        }
+    }
+
+    // Open create pixxal popup when button is clicked
+    document.getElementById('createPixxalBtn').addEventListener('click', function () {
+        document.getElementById('popup').style.display = 'block';
+    });
+
+    // Close popup
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+
+    // Enable or disable create button based on input fields
+    function toggleCreateButton() {
+        var name = document.getElementById('name').value;
+        var description = document.getElementById('description').value;
+        var createButton = document.getElementById('createButton');
+        if (name && description) {
+            createButton.disabled = false;
+        } else {
+            createButton.disabled = true;
+        }
+    }
+
+    document.getElementById('name').addEventListener('input', toggleCreateButton);
+    document.getElementById('description').addEventListener('input', toggleCreateButton);
+
+    // Create pixxal
+    document.getElementById('pixxalForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = document.getElementById('name').value;
+        var description = document.getElementById('description').value;
+        var color = document.getElementById('color').value;
+        var date = new Date();
+
+        var pixxal = {
+            name: name,
+            description: description,
+            color: color,
+            date: date
+        };
+
+        var pixxals = JSON.parse(localStorage.getItem('pixxals')) || [];
+        pixxals.push(pixxal);
+        localStorage.setItem('pixxals', JSON.stringify(pixxals));
+
+        closePopup();
+        renderPixxals();
+        document.getElementById('pixxalForm').reset();
+        showSuccessMessage();
+        showNotif("Pixxal created", "The pixxal " + name + " has been created successfully!")
+    });
+
+    // Render pixxals
+    function renderPixxals() {
+        var pixxalsContainer = document.getElementById('pixxalsContainer');
+        var pixxals = JSON.parse(localStorage.getItem('pixxals')) || [];
+
+        pixxalsContainer.innerHTML = '';
+
+        if (pixxals.length === 0) {
+            pixxalsContainer.innerHTML = '<strong><p style="text-align: center; color: #6C6E79; font-family: ">*sad trombone* No pixxals yet :c</p></strong>';
+        } else {
+            var sortOption = document.getElementById('sort').value;
+            if (sortOption === 'newest') {
+                pixxals.sort(function(a, b) {
+                    return new Date(b.date) - new Date(a.date);
+                });
+            } else if (sortOption === 'oldest') {
+                pixxals.sort(function(a, b) {
+                    return new Date(a.date) - new Date(b.date);
+                });
+            } else if (sortOption === 'az') {
+                pixxals.sort(function(a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+            }
+
+            pixxals.forEach(function (pixxal) {
+                var pixxalBlock = document.createElement('div');
+                pixxalBlock.classList.add('pixxal-block');
+                pixxalBlock.style.backgroundColor = '#1C1E22';
+                pixxalBlock.style.margin = '10px';
+                pixxalBlock.style.padding = '20px';
+                pixxalBlock.style.borderRadius = '5px';
+                pixxalBlock.style.borderLeft = '3px solid ' + pixxal.color;
+
+                var name = document.createElement('h3');
+                name.textContent = pixxal.name;
+                name.style.fontWeight = 'bold';
+
+                var description = document.createElement('p');
+                description.textContent = pixxal.description;
+
+                var createdAt = document.createElement('p');
+                createdAt.textContent = 'Created ' + timeAgo(pixxal.date);
+                createdAt.style.color = '#6C6E79';
+                pixxalBlock.appendChild(name);
+                pixxalBlock.appendChild(description);
+                pixxalBlock.appendChild(createdAt);
+
+                pixxalsContainer.appendChild(pixxalBlock);
+            });
+        }
+    }
+
+    // Event listener for sort dropdown change
+    document.getElementById('sort').addEventListener('change', function() {
+        renderPixxals();
+    });
+
+    // Display initial pixxals when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        renderPixxals();
+    });
+
+    // Function to close popup2
+    function closePopup2() {
+        document.getElementById('popup2').style.display = 'none';
+    }
+
+    // Function to search pixxals based on input
+    function searchPixxals() {
+        var searchInput = document.getElementById('search').value.toLowerCase();
+        var pixxalsContainer = document.getElementById('pixxalsContainer');
+        var pixxals = JSON.parse(localStorage.getItem('pixxals')) || [];
+        var filteredPixxals = pixxals.filter(function(pixxal) {
+            return pixxal.name.toLowerCase().includes(searchInput) || pixxal.description.toLowerCase().includes(searchInput);
         });
 
-      closeRatingPopup();
-    }
+        pixxalsContainer.innerHTML = '';
 
-    function handleClick() {
-      const currentTime = new Date().getTime();
-      const clickInterval = currentTime - lastClickTime;
+        if (filteredPixxals.length === 0) {
+            pixxalsContainer.innerHTML = '<strong><p style="text-align: center; color: #6C6E79;">Oops! That search came up empty-handed. How about looking for something else?</p></strong>';
+        } else {
+            filteredPixxals.forEach(function(pixxal) {
+                var pixxalBlock = document.createElement('div');
+                pixxalBlock.classList.add('pixxal-block');
+                pixxalBlock.style.backgroundColor = '#1C1E22';
+                pixxalBlock.style.margin = '10px';
+                pixxalBlock.style.padding = '20px';
+                pixxalBlock.style.borderRadius = '5px';
+                pixxalBlock.style.borderLeft = '3px solid ' + pixxal.color;
 
-      if (clickInterval < 50) {
-        showWarningPopup();
-      }
+                var name = document.createElement('h3');
+                name.textContent = pixxal.name;
+                name.style.fontWeight = 'bold';
 
-      lastClickTime = currentTime;
-      addCoin();
-    }
+                var description = document.createElement('p');
+                description.textContent = pixxal.description;
 
-    function showWarningPopup() {
-      document.getElementById("warningPopup").style.display = "block";
-    }
+                var createdAt = document.createElement('p');
+                createdAt.textContent = 'Created ' + timeAgo(pixxal.date);
+                createdAt.style.color = '#6C6E79';
+                pixxalBlock.appendChild(name);
+                pixxalBlock.appendChild(description);
+                pixxalBlock.appendChild(createdAt);
 
-    function closeWarningPopup() {
-      document.getElementById("warningPopup").style.display = "none";
-    }
-  </script>
-  <script>
-document.addEventListener('keydown', function(event) {
-  if ((event.key === "F12") || (event.ctrlKey && event.shiftKey && event.key === "I") || (event.ctrlKey && event.altKey && event.key === "I")) {
-    // Close the current tab/window
-    window.close();
-  }
-});
-
-document.addEventListener('contextmenu', function(event) {
-  // Close the current tab/window when right-clicked
-  window.close();
-  event.preventDefault(); // Prevent the default context menu from appearing
-});
-</script>
-<script>
-    window.onload = function() {
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.navigator.standalone && !window.matchMedia("(pointer: coarse)").matches) {
-            document.body.style.backgroundColor = "white";
-            document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px;'>Uh, Oh! Kit clicker isn't available for mobile yet! Please come back when you're on a PC</h1>";
+                pixxalsContainer.appendChild(pixxalBlock);
+            });
         }
-    };
+    }
 </script>
-</body>
 
+<script>
+    // Check if the localStorage item "visit" exists
+    if (!localStorage.getItem("visit")) {
+        // If it doesn't exist or is false, set it to true and display the popup
+        localStorage.setItem("visit", "true");
+        document.getElementById("popup2").style.display = "block";
+    }
+</script>
+    <script>
+        function showSuccessMessage() {
+            var successMessage = document.getElementById("successMessage");
+            successMessage.style.display = "block";
+            setTimeout(function () {
+                successMessage.style.animation = "slideOut 0.5s ease forwards";
+                setTimeout(function () {
+                    successMessage.style.display = "none";
+                    successMessage.style.animation = "slideIn 0.5s ease forwards";
+                }, 500);
+            }, 3000);
+        }
+    </script>
+    <script>
+    // Array of loading tips
+        var tips = [
+            "Grab a snack, this might take longer than making a sandwich.",
+            "We're untangling the internet cables. Hang tight!",
+            "Our hamsters are on overtime. Expect delays.",
+            "Like watching paint dry, but with more ones and zeros.",
+            "Making sure the internet gremlins are properly caffeinated.",
+            "The digital hamsters are putting on their running shoes.",
+            "Did you try turning it off and on again? Just kidding, we're on it!",
+            "Time to play the waiting game. Hint: It's not very fun.",
+            "Patience is a virtue, especially in cyberspace.",
+            "It's like watching grass grow, but less green.",
+            "If only the internet was as fast as our coffee maker.",
+            "The internet is like a game of chess, but with a twist.",
+            "Fun fact: this is actually to make the wait less frustrating"
+        ];
+
+    // Function to display a random tip
+    function displayRandomTip() {
+        var randomIndex = Math.floor(Math.random() * tips.length);
+        document.getElementById("loadingTip").textContent = tips[randomIndex];
+    }
+
+    // Display loading screen
+    function showLoadingScreen() {
+        document.getElementById("loadingScreen").style.display = "block";
+        displayRandomTip(); // Display a random tip
+
+        // Set a minimum display time of 3 seconds (3000 milliseconds)
+        const minimumDisplayTime = 3000;
+
+        // Calculate the time when the loading screen should be hidden
+        const hideTime = Date.now() + minimumDisplayTime;
+
+        // Set a timeout to hide the loading screen after the minimum display time has elapsed
+        const timeoutId = setTimeout(() => {
+            hideLoadingScreen();
+        }, minimumDisplayTime);
+
+        // Optionally, you can listen to the "load" event of the window and clear the timeout when the page finishes loading
+        window.addEventListener("load", () => {
+            // Calculate the remaining time until the hideTime
+            const remainingTime = hideTime - Date.now();
+
+            // If the remaining time is greater than 0, extend the timeout to ensure the loading screen stays visible until then
+            if (remainingTime > 0) {
+                clearTimeout(timeoutId); // Clear the previous timeout
+                setTimeout(() => {
+                    hideLoadingScreen();
+                }, remainingTime);
+            } else {
+                // If the remaining time is negative or zero, hide the loading screen immediately
+                hideLoadingScreen();
+            }
+        });
+    }
+
+    // Hide loading screen
+    function hideLoadingScreen() {
+        document.getElementById("loadingScreen").style.display = "none";
+    }
+
+    // Call showLoadingScreen function when the page starts loading
+    showLoadingScreen();
+            
+</script>
+    <script>
+        // Function to slide in the dropdown menu
+        function showDropdownMenu() {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.style.left = '0';
+        }
+
+        // Function to slide out and hide the dropdown menu
+        function hideDropdownMenu() {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.style.left = '-300px';
+        }
+
+        // Function to toggle the visibility of the dropdown menu
+        function toggleDropdownMenu() {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            if (dropdownMenu.style.left === '-300px') {
+                showDropdownMenu();
+            } else {
+                hideDropdownMenu();
+            }
+        }
+
+        // Event listener to show dropdown menu when hamburger icon is clicked
+        document.querySelector('.hamburger-icon').addEventListener('click', showDropdownMenu);
+
+        // Event listener to hide dropdown menu when clicking anywhere on the website
+        document.addEventListener('click', function(event) {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            var hamburgerIcon = document.querySelector('.hamburger-icon');
+            var isClickInsideDropdown = dropdownMenu.contains(event.target);
+            var isClickOnHamburgerIcon = hamburgerIcon.contains(event.target);
+            if (!isClickInsideDropdown && !isClickOnHamburgerIcon) {
+                hideDropdownMenu();
+            }
+        });
+    </script>
+    <script>
+        function askPermission() {
+          return new Promise(function(resolve, reject) {
+            const permissionResult = Notification.requestPermission(function(result) {
+              resolve(result);
+            });
+
+            if (permissionResult) {
+              permissionResult.then(resolve, reject);
+            }
+          });
+        }
+
+        function showNotif(title = 'Default Title', content = 'Default Content') {
+          if (Notification.permission === 'granted') {
+            navigator.serviceWorker.ready.then(function(registration) {
+              registration.showNotification(title, {
+                body: content,
+                icon: 'icon.png',
+                badge: 'badge.png'
+              });
+            });
+          } else if (Notification.permission !== 'denied') {
+            askPermission().then(function(permissionResult) {
+              if (permissionResult === 'granted') {
+                navigator.serviceWorker.ready.then(function(registration) {
+                  registration.showNotification(title, {
+                    body: content,
+                    icon: 'icon.png',
+                    badge: 'badge.png'
+                  });
+                });
+              } else {
+                console.log('Permission not granted for Notification');
+              }
+            });
+          } else {
+            console.log('Permission not granted for Notification');
+          }
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(function(error) {
+              console.error('Service Worker registration failed:', error);
+            });
+        }
+    </script>
+    
+</body>
 </html>
