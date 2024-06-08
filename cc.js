@@ -9,7 +9,7 @@ function validateCreatorCode() {
     const messageDiv = document.getElementById('message');
 
     if (creatorCodes.map(code => code.toUpperCase()).includes(input)) {
-        localStorage.setItem('creatorcode', input);
+        localStorage.setItem('creatorcodes', input);
         messageDiv.textContent = `You're now supporting: ${input}`;
         messageDiv.className = 'message success';
         document.getElementById('creatorCodeInput').value = input;
@@ -20,7 +20,7 @@ function validateCreatorCode() {
 }
 
 window.onload = function() {
-    const storedCreatorCode = localStorage.getItem('creatorcode');
+    const storedCreatorCode = localStorage.getItem('creatorcodes');
     const messageDiv = document.getElementById('message');
 
     if (storedCreatorCode) {
