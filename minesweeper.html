@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Minesweeper</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Lilita One' rel='stylesheet'>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Lilita One';
+            background-color: #101010;
+            text-align: center;
+            position: relative;
+            touch-action: manipulation;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .header {
+            color: white;
+            font-size: 24px;
+            margin: 20px 0;
+            font-family: 'Lilita One';
+        }
+        @keyframes bounceIn {
+          0%, 20%, 40%, 60%, 80%, 100% {
+            animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+          }
+          0% {
+            opacity: 0;
+            transform: scale3d(0.3, 0.3, 0.3);
+          }
+          20% {
+            transform: scale3d(1.1, 1.1, 1.1);
+          }
+          40% {
+            transform: scale3d(0.9, 0.9, 0.9);
+          }
+          60% {
+            opacity: 1;
+            transform: scale3d(1.03, 1.03, 1.03);
+          }
+          80% {
+            transform: scale3d(0.97, 0.97, 0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: scale3d(1, 1, 1);
+          }
+        }
+
+        .message {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-family: 'Lilita One';
+            animation: bounceIn 1s;
+        }
+        .extraMsg {
+            color: white;
+            font-size: 16;
+            margin-bottom: 20px;
+            font-family: 'Lilita One';
+        }
+
+        .minefield {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2F2F2F;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 5px;
+        }
+
+        .cell.revealed {
+            cursor: default;
+            background-color: #2F2F2F;
+        }
+
+        .cell.mine {
+            background-color: #E1655D !important;
+            color: white;
+            opacity: 0.5;
+        }
+
+        .cell.safe {
+            background-color: #64DE75;
+            color: white;
+        }
+
+        .transparent {
+            opacity: 0.5;
+        }
+
+        button {
+            background-color: #3B71F7;
+            border-left: 2px solid #3B71F7;
+            border-right: 2px solid #3B71F7;
+            border-top: 3px solid #4796F5;
+            border-bottom: 3px solid #2048E7;
+            outline: 2px solid black;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Lilita One';
+        }
+        button:active {
+            opacity: 0.7;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        button .button-icon {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+        }
+        .hr {
+            border: none;
+            border-top: 3px solid #3B71F7;
+            margin: 10px 0;
+        }
+        green {
+            color: #64DE75;
+        }
+        red {
+            color: #E1655D;
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0); /* Start from center with scale 0 */
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2); /* Scale up */
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1); /* Final scale at center */
+            }
+        }
+
+        .achievement-popup {
+            width: 300px;
+            height: 300px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1F1F1F;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-family: 'Lilita One';
+            animation: bounceIn 0.5s ease;
+            z-index: 1001;
+        }
+
+        .achievement-popup h1 {
+            font-size: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .achievement-popup img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-popup .title {
+            color: yellow;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-popup .description {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .achievement-popup button {
+            background-color: #3B71F7;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .achievement-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .help-button {
+            font-family: 'Lilita One';
+            font-border: 1px solid black;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3B71F7;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .help-overlay img {
+            border-radius: 10px;
+            padding: 10px;
+            width: 400px;
+            height: auto;
+        }
+
+        .help-overlay-active {
+            overflow: hidden;
+        }
+
+        .hr {
+            width: 100%;
+            background-color: #090909;
+            border-bottom: 2px solid #171717;
+            border-top: 2px solid #0E0E0E;
+            margin-top: 50px;
+        }
+        title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-family: 'Lilita One';
+            text-align: center;
+        }
+        .streak-button {
+            font-family: 'Lilita One';
+            font-border: 1px solid black;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #3B71F7;
+            color: white;
+            border: 2px solid black;
+            border-radius: 30%;
+            width: 70px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1002;
+            vertical-align: middle;
+            display: inline-block;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            
+        }
+        .cc {
+            text-align: center;
+            font-family: 'Lilita One';
+            transparency: 0.5;
+            color: white;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <green>Wins:</green> <span id="wins">0</span> | <red>Losses:</red> <span id="loses">0</span>
+    </div>
+    <div class="container">
+        <div id="message" class="message"></div>
+        <div id="extraMsg" class="extraMsg"></div>
+        <div id="minefield" class="minefield"></div>
+        <button id="resetButton" onclick="resetGame()">
+            <img src="reload.png" alt="Reset Icon" class="button-icon">
+            Reset Game
+        </button>
+        <audio id="loseAudio" src="lose.mov" type="audio/mp4"></audio>
+        <audio id="winAudio" src="win.mov" type="audio/mp4"></audio>
+    </div>
+<hr class="hr">
+    
+    <div class="cc" id="cc">
+        </div>
+
+    
+    <button class="help-button" onclick="toggleHelp()">?</button>
+
+    <div id="helpOverlay" class="help-overlay" style="display: none;">
+        <img src="help.png" alt="Help Image">
+    </div>
+
+
+    <script>
+        // Define custom events
+        const winEvent = new Event('onWin');
+        const lossEvent = new Event('onLoss');
+        const resetEvent = new Event('onReset');
+        const startEvent = new Event('onStart');
+        const endEvent = new Event('onEnd');
+
+        function achievement(title, description) {
+            const overlay = document.createElement('div');
+            overlay.className = 'achievement-overlay';
+
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup';
+
+            popup.innerHTML = `
+                <h1>NEW ACHIEVEMENT!</h1>
+                <img src="achievement.png" alt="Achievement">
+                <div class="title">${title}</div>
+                <div class="description">${description}</div>
+                <br>
+                <button style="borderLeft: 2px solid #3B71F7; borderRight: 2px solid #3B71F7; borderTop: 3px solid #4796F5; borderBottom: 3px solid #2048E7; outline: 2px solid black;" onclick="removeAchievementPopup()">Okay!</button>
+            `;
+
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+        }
+
+        function removeAchievementPopup() {
+            const overlay = document.querySelector('.achievement-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        function toggleHelp() {
+            const helpOverlay = document.getElementById('helpOverlay');
+            const displayStyle = helpOverlay.style.display;
+            helpOverlay.style.display = displayStyle === 'none' ? 'flex' : 'none';
+            document.body.classList.toggle('help-overlay-active', helpOverlay.style.display === 'flex');
+
+            // Disable other elements if help overlay is visible
+            document.body.classList.toggle('no-click', helpOverlay.style.display === 'flex');
+        }
+
+        document.getElementById('helpOverlay').addEventListener('click', () => {
+            toggleHelp();
+        });
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('.help-button, .help-overlay img')) {
+                return;
+            }
+            const helpOverlay = document.getElementById('helpOverlay');
+            if (helpOverlay.style.display === 'flex') {
+                toggleHelp();
+            }
+        });
+
+        const mineFieldElement = document.getElementById('minefield');
+        const messageElement = document.getElementById('message');
+        const resetButton = document.getElementById('resetButton');
+        const loseAudio = document.getElementById('loseAudio');
+        const winAudio = document.getElementById('winAudio');
+        const winsElement = document.getElementById('wins');
+        const losesElement = document.getElementById('loses');
+        let mineField = [];
+        const size = 4;
+        let clickedCells = [];
+        let gameEnded = false;
+
+        // Initialize wins and loses from localStorage
+        function initScores() {
+            if (localStorage.getItem('wins') === null) {
+                localStorage.setItem('wins', '0');
+            }
+            if (localStorage.getItem('loses') === null) {
+                localStorage.setItem('loses', '0');
+            }
+            winsElement.textContent = localStorage.getItem('wins');
+            losesElement.textContent = localStorage.getItem('loses');
+        }
+
+        function createMineField() {
+            mineField = Array.from({ length: size }, () =>
+                Array.from({ length: size }, () => 0)
+            );
+
+            let bombsPlaced = 0;
+            while (bombsPlaced < 4) {
+                const row = Math.floor(Math.random() * size);
+                const col = Math.floor(Math.random() * size);
+
+                if (mineField[row][col] === 0) {
+                    mineField[row][col] = 1;
+                    bombsPlaced++;
+                }
+            }
+        }
+
+        function renderMineField() {
+            messageElement.textContent = '';
+            mineFieldElement.innerHTML = '';
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', revealCell);
+                    mineFieldElement.appendChild(cell);
+                }
+            }
+        }
+
+        function revealCell(event) {
+            if (gameEnded) return; // Ignore clicks after game ends
+            const row = event.target.dataset.row;
+            const col = event.target.dataset.col;
+
+            if (mineField[row][col] === 1) {
+                event.target.textContent = '💣';
+                event.target.classList.add('mine');
+                messageElement.textContent = 'You lose!';
+                messageElement.style.color = 'red';
+                loseAudio.play();
+                revealAllMines();
+                gameEnded = true;
+                updateScore('loses');
+                disableResetButtonForSeconds(3);
+                document.dispatchEvent(lossEvent); // Dispatch loss event
+            } else {
+                event.target.textContent = '✔️';
+                event.target.classList.add('safe');
+                if (!clickedCells.includes(row)) {
+                    clickedCells.push(row);
+                }
+                checkForWin();
+            }
+            event.target.classList.add('revealed');
+            event.target.removeEventListener('click', revealCell);
+        }
+
+        function checkForWin() {
+            if (clickedCells.length === size) {
+                messageElement.textContent = 'You win!';
+                messageElement.style.color = '#64DE75';
+                winAudio.play();
+                confetti({
+                  particleCount: 250
+                });
+                revealAllCells();
+                gameEnded = true;
+                updateScore('wins');
+                disableResetButtonForSeconds(3);
+                document.dispatchEvent(winEvent); // Dispatch win event
+            }
+        }
+
+        function revealAllMines() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = cell.dataset.row;
+                const col = cell.dataset.col;
+                if (mineField[row][col] === 1) {
+                    cell.textContent = '💣';
+                    if (!cell.classList.contains('mine')) {
+                        cell.classList.add('revealed');
+                    }
+                } else {
+                    if (!cell.classList.contains('safe')) {
+                        cell.classList.add('revealed');
+                    }
+                }
+                cell.classList.add('transparent');
+                cell.removeEventListener('click', revealCell);
+            });
+        }
+
+        function revealAllCells() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = cell.dataset.row;
+                const col = cell.dataset.col;
+                cell.classList.add('revealed');
+                cell.classList.add('transparent');
+                cell.removeEventListener('click', revealCell);
+                if (mineField[row][col] === 1) {
+                    if (!cell.classList.contains('mine')) {
+                        cell.textContent = '💣';
+                    }
+                }
+            });
+        }
+
+        function disableResetButtonForSeconds(seconds) {
+            resetButton.disabled = true;
+            setTimeout(() => {
+                resetButton.disabled = false;
+            }, seconds * 1000);
+        }
+
+        function resetGame() {
+            clickedCells = [];
+            gameEnded = false;
+            messageElement.textContent = '';
+            createMineField();
+            renderMineField();
+            document.dispatchEvent(resetEvent);
+            document.dispatchEvent(startEvent);
+        }
+
+        function updateScore(type) {
+            const currentScore = parseInt(localStorage.getItem(type), 10);
+            localStorage.setItem(type, currentScore + 1);
+            if (type === 'wins') {
+                winsElement.textContent = currentScore + 1;
+            } else {
+                losesElement.textContent = currentScore + 1;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initScores();
+            createMineField();
+            renderMineField();
+            document.dispatchEvent(startEvent);
+        });
+
+    </script>
+
+
+        <script>
+            function toggleHelp() {
+                const helpOverlay = document.getElementById('helpOverlay');
+                const displayStyle = helpOverlay.style.display;
+                helpOverlay.style.display = displayStyle === 'none' ? 'flex' : 'none';
+                document.body.classList.toggle('help-overlay-active', helpOverlay.style.display === 'flex');
+
+                // Disable other elements if help overlay is visible
+                document.body.classList.toggle('no-click', helpOverlay.style.display === 'flex');
+            }
+
+            document.getElementById('helpOverlay').addEventListener('click', () => {
+                toggleHelp();
+            });
+
+            document.body.addEventListener('click', (e) => {
+                if (e.target.closest('.help-button, .help-overlay img')) {
+                    return;
+                }
+                const helpOverlay = document.getElementById('helpOverlay');
+                if (helpOverlay.style.display === 'flex') {
+                    toggleHelp();
+                }
+            });
+        </script>
+    <script>
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function ctrlShiftKey(e, keyCode) {
+            return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+        }
+
+        document.onkeydown = (e) => {
+        // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
+        if (
+            event.keyCode === 123 ||
+            ctrlShiftKey(e, 'I') ||
+            ctrlShiftKey(e, 'J') ||
+            ctrlShiftKey(e, 'C') ||
+            (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+        )
+            return false;
+        };
+        setInterval(() => {debugger;}, 100);
+    </script>
+    <script> 
+    document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') { // Check if space key is pressed
+                document.getElementById('resetButton').click();
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('onWin', () => {
+          const wins = parseInt(localStorage.getItem('wins'), 10);
+
+          if (wins === 10) {
+            achievement("Beginner's Luck", "Win 10 rounds of Minesweeper");
+          } else if (wins === 50) {
+            achievement("Getting the Hang of It", "Win 50 rounds of Minesweeper");
+          } else if (wins === 100) {
+            achievement("Seasoned Sweeper", "Win 100 rounds of Minesweeper");
+          } else if (wins === 500) {
+            achievement("Halfway Hero", "Win 500 rounds of Minesweeper");
+          } else if (wins === 1000) {
+            achievement("Minesweeper Master", "Win 1000 rounds of Minesweeper");
+          } else if (wins === 10000) {
+            achievement("Legendary Sweeper", "Win 10,000 rounds of Minesweeper");
+          } else if (wins === 50000) {
+            achievement("Epic Conqueror", "Win 50,000 rounds of Minesweeper");
+          } else if (wins === 100000) {
+            achievement("Minesweeper Immortal", "Win 100,000 rounds of Minesweeper");
+          } else if (wins === 1000000) {
+            achievement("The Ultimate Legend", "Win 1,000,000 rounds of Minesweeper");
+          }
+        });
+    </script>
+    <script>
+
+        document.addEventListener('onWin', () => {
+          document.dispatchEvent(endEvent);
+        });
+
+        document.addEventListener('onLoss', () => {
+          document.dispatchEvent(endEvent);
+        });
+    </script>
+<script>
+    document.addEventListener('onWin', () => {
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+
+      if (dayOfWeek === 0) {
+        updateScore('wins');
+        document.querySelector('.extraMsg').textContent = "+1 extra point for Sunday event";
+      }
+    });
+
+    document.addEventListener('onReset', () => {
+        document.querySelector('.extraMsg').textContent = "";
+    });
+</script>
+    <script src="shop.js"></script>
+    
+
+</body>
+</html>
