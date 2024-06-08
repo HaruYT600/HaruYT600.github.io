@@ -1,4 +1,4 @@
-const creatorCodes = ["Haru", "Lovvburn", "Artiman", "IseanQu", "Web"];
+const creatorCodes = ["Haru", "Lovvburn", "Artiman", "IseanQu", "Web", "Yokai"];
 
 function redirectToGame(gameUrl) {
     window.location.href = gameUrl;
