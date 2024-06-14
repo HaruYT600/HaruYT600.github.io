@@ -37,6 +37,7 @@
         const gravity = 0.5;
         const friction = 0.99;
         const bounce = 0.8;
+        let lastMouseX, lastMouseY;
 
         function onMouseDown(e) {
             isDragging = true;
@@ -45,20 +46,25 @@
             block.style.cursor = 'grabbing';
             velocityX = 0;
             velocityY = 0;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
         }
 
         function onMouseMove(e) {
             if (isDragging) {
                 block.style.left = (e.clientX - offsetX) + 'px';
                 block.style.top = (e.clientY - offsetY) + 'px';
+                // Calculate velocity based on mouse movement
+                velocityX = e.clientX - lastMouseX;
+                velocityY = e.clientY - lastMouseY;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
             }
         }
 
         function onMouseUp(e) {
             isDragging = false;
             block.style.cursor = 'grab';
-            velocityX = e.movementX;
-            velocityY = e.movementY;
         }
 
         function update() {
