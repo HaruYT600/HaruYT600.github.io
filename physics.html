@@ -110,13 +110,31 @@
                             rectA.top < rectB.bottom &&
                             rectA.bottom > rectB.top
                         ) {
-                            // Simple collision response: reverse velocities
-                            const tempVelocityX = blockA.velocityX;
-                            const tempVelocityY = blockA.velocityY;
-                            blockA.velocityX = blockB.velocityX * bounce;
-                            blockA.velocityY = blockB.velocityY * bounce;
-                            blockB.velocityX = tempVelocityX * bounce;
-                            blockB.velocityY = tempVelocityY * bounce;
+                            // Simple collision response: separate blocks
+                            const overlapX = Math.min(rectA.right - rectB.left, rectB.right - rectA.left);
+                            const overlapY = Math.min(rectA.bottom - rectB.top, rectB.bottom - rectA.top);
+
+                            if (overlapX < overlapY) {
+                                if (rectA.left < rectB.left) {
+                                    blockA.style.left = rectA.left - overlapX + 'px';
+                                    blockB.style.left = rectB.left + overlapX + 'px';
+                                } else {
+                                    blockA.style.left = rectA.left + overlapX + 'px';
+                                    blockB.style.left = rectB.left - overlapX + 'px';
+                                }
+                                blockA.velocityX = -blockA.velocityX * bounce;
+                                blockB.velocityX = -blockB.velocityX * bounce;
+                            } else {
+                                if (rectA.top < rectB.top) {
+                                    blockA.style.top = rectA.top - overlapY + 'px';
+                                    blockB.style.top = rectB.top + overlapY + 'px';
+                                } else {
+                                    blockA.style.top = rectA.top + overlapY + 'px';
+                                    blockB.style.top = rectB.top - overlapY + 'px';
+                                }
+                                blockA.velocityY = -blockA.velocityY * bounce;
+                                blockB.velocityY = -blockB.velocityY * bounce;
+                            }
                         }
                     }
                 });
