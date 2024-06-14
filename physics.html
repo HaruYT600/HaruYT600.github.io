@@ -110,7 +110,6 @@
                             rectA.top < rectB.bottom &&
                             rectA.bottom > rectB.top
                         ) {
-                            // Simple collision response: separate blocks
                             const overlapX = Math.min(rectA.right - rectB.left, rectB.right - rectA.left);
                             const overlapY = Math.min(rectA.bottom - rectB.top, rectB.bottom - rectA.top);
 
@@ -135,6 +134,14 @@
                                 blockA.velocityY = -blockA.velocityY * bounce;
                                 blockB.velocityY = -blockB.velocityY * bounce;
                             }
+
+                            // Adjust velocities to ensure blocks move apart more realistically
+                            const combinedVelocityX = blockA.velocityX + blockB.velocityX;
+                            const combinedVelocityY = blockA.velocityY + blockB.velocityY;
+                            blockA.velocityX = combinedVelocityX / 2;
+                            blockA.velocityY = combinedVelocityY / 2;
+                            blockB.velocityX = combinedVelocityX / 2;
+                            blockB.velocityY = combinedVelocityY / 2;
                         }
                     }
                 });
@@ -142,8 +149,8 @@
         }
 
         function update() {
-            if (!isDragging) {
-                blocks.forEach(block => {
+            blocks.forEach(block => {
+                if (block !== draggedBlock) {
                     block.velocityY += gravity;
 
                     let left = block.offsetLeft + block.velocityX;
@@ -172,10 +179,10 @@
 
                     block.style.left = left + 'px';
                     block.style.top = top + 'px';
-                });
+                }
+            });
 
-                detectCollisions();
-            }
+            detectCollisions();
             requestAnimationFrame(update);
         }
 
