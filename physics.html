@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Block</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        #block {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+            position: absolute;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+    <div id="block"></div>
+
+    <script>
+        const block = document.getElementById('block');
+        let isDragging = false;
+        let offsetX, offsetY;
+        let velocityX = 0, velocityY = 0;
+        const friction = 0.99;
+        const bounce = 0.8;
+
+        function onMouseDown(e) {
+            isDragging = true;
+            offsetX = e.clientX - block.offsetLeft;
+            offsetY = e.clientY - block.offsetTop;
+            block.style.cursor = 'grabbing';
+            velocityX = 0;
+            velocityY = 0;
+        }
+
+        function onMouseMove(e) {
+            if (isDragging) {
+                block.style.left = (e.clientX - offsetX) + 'px';
+                block.style.top = (e.clientY - offsetY) + 'px';
+            }
+        }
+
+        function onMouseUp(e) {
+            isDragging = false;
+            block.style.cursor = 'grab';
+            velocityX = e.movementX;
+            velocityY = e.movementY;
+        }
+
+        function update() {
+            if (!isDragging) {
+                let left = block.offsetLeft + velocityX;
+                let top = block.offsetTop + velocityY;
+                
+                // Apply friction
+                velocityX *= friction;
+                velocityY *= friction;
+                
+                // Handle collisions with edges
+                if (left <= 0) {
+                    left = 0;
+                    velocityX = -velocityX * bounce;
+                } else if (left + block.offsetWidth >= window.innerWidth) {
+                    left = window.innerWidth - block.offsetWidth;
+                    velocityX = -velocityX * bounce;
+                }
+
+                if (top <= 0) {
+                    top = 0;
+                    velocityY = -velocityY * bounce;
+                } else if (top + block.offsetHeight >= window.innerHeight) {
+                    top = window.innerHeight - block.offsetHeight;
+                    velocityY = -velocityY * bounce;
+                }
+
+                block.style.left = left + 'px';
+                block.style.top = top + 'px';
+            }
+            requestAnimationFrame(update);
+        }
+
+        block.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+        
+        update();
+    </script>
+</body>
+</html>
