@@ -11,13 +11,10 @@
             overflow: hidden;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background-color: #f0f0f0;
         }
 
-        #block {
+        .block {
             width: 50px;
             height: 50px;
             background-color: black;
@@ -27,83 +24,149 @@
     </style>
 </head>
 <body>
-    <div id="block"></div>
-
     <script>
-        const block = document.getElementById('block');
-        let isDragging = false;
-        let offsetX, offsetY;
-        let velocityX = 0, velocityY = 0;
+        let blocks = [];
         const gravity = 0.5;
         const friction = 0.99;
         const bounce = 0.8;
+        let isDragging = false;
+        let draggedBlock = null;
+        let offsetX, offsetY;
         let lastMouseX, lastMouseY;
 
-        function onMouseDown(e) {
+        function createBlock(x, y) {
+            const block = document.createElement('div');
+            block.classList.add('block');
+            block.style.left = x + 'px';
+            block.style.top = y + 'px';
+            block.velocityX = 0;
+            block.velocityY = 0;
+            document.body.appendChild(block);
+
+            block.addEventListener('mousedown', (e) => onMouseDown(e, block));
+
+            blocks.push(block);
+        }
+
+        function onMouseDown(e, block) {
             isDragging = true;
+            draggedBlock = block;
             offsetX = e.clientX - block.offsetLeft;
             offsetY = e.clientY - block.offsetTop;
             block.style.cursor = 'grabbing';
-            velocityX = 0;
-            velocityY = 0;
+            block.velocityX = 0;
+            block.velocityY = 0;
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;
+            e.preventDefault();
         }
 
         function onMouseMove(e) {
             if (isDragging) {
-                block.style.left = (e.clientX - offsetX) + 'px';
-                block.style.top = (e.clientY - offsetY) + 'px';
-                // Calculate velocity based on mouse movement
-                velocityX = e.clientX - lastMouseX;
-                velocityY = e.clientY - lastMouseY;
+                draggedBlock.style.left = (e.clientX - offsetX) + 'px';
+                draggedBlock.style.top = (e.clientY - offsetY) + 'px';
+                draggedBlock.velocityX = e.clientX - lastMouseX;
+                draggedBlock.velocityY = e.clientY - lastMouseY;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
             }
         }
 
         function onMouseUp(e) {
-            isDragging = false;
-            block.style.cursor = 'grab';
+            if (isDragging) {
+                isDragging = false;
+                draggedBlock.style.cursor = 'grab';
+                draggedBlock = null;
+            }
+        }
+
+        function onContextMenu(e) {
+            e.preventDefault();
+            createBlock(e.clientX - 25, e.clientY - 25);
+        }
+
+        function onKeyPress(e) {
+            if (e.key.toLowerCase() === 'r') {
+                resetBlocks();
+            }
+        }
+
+        function resetBlocks() {
+            blocks.forEach(block => block.remove());
+            blocks = [];
+            createBlock(window.innerWidth / 2 - 25, window.innerHeight / 2 - 25);
+        }
+
+        function detectCollisions() {
+            blocks.forEach(blockA => {
+                blocks.forEach(blockB => {
+                    if (blockA !== blockB) {
+                        const rectA = blockA.getBoundingClientRect();
+                        const rectB = blockB.getBoundingClientRect();
+
+                        if (
+                            rectA.left < rectB.right &&
+                            rectA.right > rectB.left &&
+                            rectA.top < rectB.bottom &&
+                            rectA.bottom > rectB.top
+                        ) {
+                            // Simple collision response: reverse velocities
+                            const tempVelocityX = blockA.velocityX;
+                            const tempVelocityY = blockA.velocityY;
+                            blockA.velocityX = blockB.velocityX * bounce;
+                            blockA.velocityY = blockB.velocityY * bounce;
+                            blockB.velocityX = tempVelocityX * bounce;
+                            blockB.velocityY = tempVelocityY * bounce;
+                        }
+                    }
+                });
+            });
         }
 
         function update() {
             if (!isDragging) {
-                velocityY += gravity;
+                blocks.forEach(block => {
+                    block.velocityY += gravity;
 
-                let left = block.offsetLeft + velocityX;
-                let top = block.offsetTop + velocityY;
-                
-                // Apply friction
-                velocityX *= friction;
-                velocityY *= friction;
-                
-                // Handle collisions with edges
-                if (left <= 0) {
-                    left = 0;
-                    velocityX = -velocityX * bounce;
-                } else if (left + block.offsetWidth >= window.innerWidth) {
-                    left = window.innerWidth - block.offsetWidth;
-                    velocityX = -velocityX * bounce;
-                }
+                    let left = block.offsetLeft + block.velocityX;
+                    let top = block.offsetTop + block.velocityY;
+                    
+                    // Apply friction
+                    block.velocityX *= friction;
+                    block.velocityY *= friction;
+                    
+                    // Handle collisions with edges
+                    if (left <= 0) {
+                        left = 0;
+                        block.velocityX = -block.velocityX * bounce;
+                    } else if (left + block.offsetWidth >= window.innerWidth) {
+                        left = window.innerWidth - block.offsetWidth;
+                        block.velocityX = -block.velocityX * bounce;
+                    }
 
-                if (top <= 0) {
-                    top = 0;
-                    velocityY = -velocityY * bounce;
-                } else if (top + block.offsetHeight >= window.innerHeight) {
-                    top = window.innerHeight - block.offsetHeight;
-                    velocityY = -velocityY * bounce;
-                }
+                    if (top <= 0) {
+                        top = 0;
+                        block.velocityY = -block.velocityY * bounce;
+                    } else if (top + block.offsetHeight >= window.innerHeight) {
+                        top = window.innerHeight - block.offsetHeight;
+                        block.velocityY = -block.velocityY * bounce;
+                    }
 
-                block.style.left = left + 'px';
-                block.style.top = top + 'px';
+                    block.style.left = left + 'px';
+                    block.style.top = top + 'px';
+                });
+
+                detectCollisions();
             }
             requestAnimationFrame(update);
         }
 
-        block.addEventListener('mousedown', onMouseDown);
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('contextmenu', onContextMenu);
+        document.addEventListener('keydown', onKeyPress);
+
+        createBlock(window.innerWidth / 2 - 25, window.innerHeight / 2 - 25);
         
         update();
     </script>
