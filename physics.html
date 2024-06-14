@@ -34,6 +34,7 @@
         let isDragging = false;
         let offsetX, offsetY;
         let velocityX = 0, velocityY = 0;
+        const gravity = 0.5;
         const friction = 0.99;
         const bounce = 0.8;
 
@@ -62,6 +63,8 @@
 
         function update() {
             if (!isDragging) {
+                velocityY += gravity;
+
                 let left = block.offsetLeft + velocityX;
                 let top = block.offsetTop + velocityY;
                 
