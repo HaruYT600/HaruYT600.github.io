@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Message to Discord</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  #response {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Send Message to Discord</h1>
+  <div class="form-group">
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" rows="4" placeholder="Enter your message"></textarea>
+  </div>
+  <button id="sendMessageBtn">Send Message</button>
+  <div id="response"></div>
+</div>
+
+<script>
+  document.getElementById('sendMessageBtn').addEventListener('click', function() {
+    const message = document.getElementById('message').value;
+    const authorizationToken = 'R7mP#3qK9@sF8*yB2xN6o!T1zA5-cW0eR7mP#3qK9@sF8*yB2xN6o!T1zA5-cW0e';
+    const url = 'https://f12b1b51-f428-413a-8300-6e4528dca034-00-v7zu63r63y8g.picard.replit.dev/webhook';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+      },
+      body: JSON.stringify({ message })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Success:', data);
+      document.getElementById('response').innerHTML = '<p>Message sent successfully!</p>';
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+    });
+  });
+</script>
+
+</body>
+</html>
