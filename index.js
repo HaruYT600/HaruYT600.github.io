@@ -1,44 +1,31 @@
-// index.js
 const express = require('express');
-const fs = require('fs');
+const http = require('http');
+const socketIo = require('socket.io');
+const path = require('path');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.use('/static', express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'chatweb.html'));
+});
+
+io.on('connection', (socket) => {
+    console.log('a user connected');
+
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
+
 const PORT = process.env.PORT || 3000;
-
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Route to handle incrementing count
-app.get('/hm', (req, res) => {
-    fs.readFile('count.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading count.json');
-        }
-        const count = JSON.parse(data);
-        count.value++;
-        fs.writeFile('count.json', JSON.stringify(count), err => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('Error writing to count.json');
-            }
-            res.sendFile(__dirname + 'count.html');
-        });
-    });
-});
-
-// Route to serve count.json
-app.get('/count', (req, res) => {
-    fs.readFile('count.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading count.json');
-        }
-        res.json(JSON.parse(data));
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
