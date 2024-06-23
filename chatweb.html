@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body {
+            background-color: #111420;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        #form {
+            display: flex;
+            padding: 10px;
+            background: #090c17;
+            border-radius: 10px;
+        }
+        #input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+        #input:focus {
+            outline: none;
+        }
+        #send {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f39c12;
+            color: white;
+            cursor: pointer;
+        }
+        #send:focus {
+            outline: none;
+        }
+        .message {
+            background: #090c17;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: slideUp 0.5s ease-in-out;
+        }
+        .message b {
+            display: block;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="messages"></div>
+    <form id="form" action="">
+        <input id="input" autocomplete="off" /><button id="send">Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let name = localStorage.getItem('name');
+            if (!name) {
+                name = prompt('Please enter your name:');
+                localStorage.setItem('name', name);
+            }
+
+            const socket = io();
+            const form = document.getElementById('form');
+            const input = document.getElementById('input');
+            const messages = document.getElementById('messages');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (input.value) {
+                    socket.emit('chat message', { name, message: input.value });
+                    input.value = '';
+                }
+            });
+
+            socket.on('chat message', (msg) => {
+                const item = document.createElement('div');
+                item.classList.add('message');
+                item.innerHTML = `<b>${msg.name}</b>${msg.message}`;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        });
+    </script>
+</body>
+</html>
