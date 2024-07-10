@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Freehand&display=swap" rel="stylesheet">
+    <title>Send Anonymous Message</title>
+    <style>
+        @font-face {
+          font-family: 'DJB Snarky Bess';
+          src: url('DJB Snarky Bess.ttf') format('truetype');
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Coiny&display=swap');
+        body {
+            background-color: #3F3F45;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            font-family: "Coiny", system-ui;
+            background-color: #27272A;
+            width: 100%;
+            height: 80px;
+            text-align: center;
+            position: relative;
+            font-size: 24px;
+            padding-top: 20px;
+            top: 0;
+        }
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding-top: 80px;
+        }
+        .container {
+            background-color: #27272A;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        footer {
+            background-color: #27272A;
+            width: 100%;
+            height: 80px;
+            padding-top: 20px;
+            text-align: center;
+            position: relative;
+            font-size: 20px;
+        }
+        textarea {
+            color: #A1A1A9;
+            background-color: #3F3F45;
+            width: 90%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+        textarea:focus {
+            outline: none;
+        }
+        button {
+            width: 95%;
+            padding: 10px 20px;
+            margin-top: -20px;
+            background-color: #DF8619;
+            border: none;
+            border-radius: 5px;
+            color: #FFFFFF;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+        }
+        .notification {
+            background-color: #DF8619;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s, fadeOut 0.5s 3.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        b {
+            margin-top: 30px;
+        }
+        .char-count {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 14px;
+            color: #A1A1A9;
+        }
+        a {
+            color: #DF8619;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>Send a <strong style="color: #DF8619;">ANONYMOUS</strong> message<br>
+        <right>to Haru’s Empire</right></header>
+    <div id="notification"></div>
+    <div class="wrapper">
+        <div class="container">
+            <h2>Anonymous messages…</h2>
+            <p>You can now send an anonymous message to Haru’s Empire 🤫</p>
+            <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+            <div class="char-count" id="charCount">0/2000</div>
+            <button id="sendButton" disabled>Send</button>
+            <p id="cooldownMessage"></p>
+        </div>
+    </div>
+    <footer>
+        Copyright © 2024 Haru's Empire. All rights reserved.       Made by <a href="https://discord.gg/QrF3q9kHPu">HaruYT600</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/profanity-cleaner@latest"></script>
+    <script src="assets-data-@926.37.01Og81hhObnLg.js" type="text/javascript"></script>
+    <script src="assets-data-@926.65.7jK-8yH.js" type="text/javascript"></script>
+<script src="assets-data-@926.37.01Og81hKajkP.js" type="text/javascript"></script>
+    <script src="assets-data-@926.37.01Og-826hajkP.js" type="text/javascript"></script>
+    <script>
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function ctrlShiftKey(e, keyCode) {
+            return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+        }
+
+        document.onkeydown = (e) => {
+        // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
+        if (
+            event.keyCode === 123 ||
+            ctrlShiftKey(e, 'I') ||
+            ctrlShiftKey(e, 'J') ||
+            ctrlShiftKey(e, 'C') ||
+            (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+        )
+            return false;
+        };
+        setInterval(() => {debugger;}, 100);
+    </script>
+</body>
+</html>
