@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+    <title>Virtual Gift Creator</title>
+    <style>
+        body {
+            background-color: #FFA7F0;
+            font-family: 'Pacifico', cursive;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        header {
+            background-color: #EA7ED6;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .container {
+            text-align: left;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #FFE0F7;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        @media only screen and (max-width: 768px) {
+            .container {
+                max-width: 350px;
+            }
+        }
+        input[type="radio"] {
+            /* Add flex properties to align items horizontally */
+            display: inline-flex;
+            align-items: center;
+        }
+        input[type="radio"] + label {
+            /* Adjust margin to separate the radio button from label */
+            margin-left: 10px;
+        }
+
+        h1, h2, p, label {
+            color: #EA7ED6;
+        }
+        select {
+            height: 40px;
+        }
+        input[type="radio"]:checked:before {
+            background-color: #EA7ED6;
+        }
+
+        input, textarea, select, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 2px solid #EA7ED6;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        button {
+            background-color: #EA7ED6;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #EA7ED6;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .popup.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .popup-content h2 {
+            margin-top: 0;
+        }
+
+        .popup-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .popup-content textarea {
+            background-color: #f0f0f0;
+            cursor: default;
+        }
+        img {
+            margin-top: 20px;
+            height: 200px;
+            width: auto;
+            align-items: center;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #EA7ED6;
+        }
+        option {
+            padding: 10px;
+            height: 50px;
+            }
+        footer {
+            background-color: #EA7ED6;
+            color: white;
+            text-align: center;
+            bottom: 0;
+            width: 100%;
+            
+        }
+    </style>
+</head>
+    <div id="heart-container"></div>
+    <noscript>
+        Javascript is required to use this site.
+    </noscript>
+    <img src="https://i.ibb.co/qpCp93T/IMG-3939.jpg" alt="Icon">
+    <p>Warning: gift may cause too much happiness</p>
+    <div class="container">
+        <label for="fromWho">FROM WHO</label>
+        <input type="text" id="fromWho" placeholder="Put your name">
+
+        <label for="toWho">TO WHO</label>
+        <input type="text" id="toWho" placeholder="Put their name">
+
+        <label for="randomText">RANDOM TEXT</label>
+        <input type="radio" id="randomText" name="textOption" value="random" checked>
+        <label for="ownText">CUSTOM TEXT</label>
+        <input type="radio" id="ownText" name="textOption" value="own">
+
+
+        <textarea id="ownTextArea" rows="4" maxlength="2000" style="display: none;" placeholder="Put your RoMaNtIc text here"></textarea>
+
+        <label for="color">CHOOSE A COLOR</label>
+        <select id="color">
+            <option value="#4CA5FF">Blue</option>
+            <option value="#FFA7F0" selected>Pink</option>
+            <option value="#4FFF4C">Green</option>
+        </select>
+
+        <button id="createGiftButton" disabled>CREATE GIFT</button>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Gift created! 💖</h2>
+            <p>Send your partner this link so they can open it:</p>
+            <textarea id="giftLink" readonly></textarea>
+            <button id="copyLinkButton">Copy link</button>
+        </div>
+    </div>
+<footer>Made by Haru</footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromWhoInput = document.getElementById('fromWho');
+            const toWhoInput = document.getElementById('toWho');
+            const textOptionRadios = document.querySelectorAll('input[name="textOption"]');
+            const ownTextArea = document.getElementById('ownTextArea');
+            const colorSelect = document.getElementById('color');
+            const createGiftButton = document.getElementById('createGiftButton');
+            const popup = document.getElementById('popup');
+            const closePopup = document.getElementById('closePopup');
+            const giftLinkTextarea = document.getElementById('giftLink');
+            const copyLinkButton = document.getElementById('copyLinkButton');
+
+            const randomTexts = [
+                "You are amazing!",
+                "You're the best!",
+                "You make the world brighter!"
+            ];
+
+            function validateForm() {
+                const fromWho = fromWhoInput.value.trim();
+                const toWho = toWhoInput.value.trim();
+                const textOption = document.querySelector('input[name="textOption"]:checked').value;
+                const ownText = ownTextArea.value.trim();
+                if (fromWho && toWho && (textOption === 'random' || (textOption === 'own' && ownText))) {
+                    createGiftButton.disabled = false;
+                } else {
+                    createGiftButton.disabled = true;
+                }
+            }
+
+            function base64Encode(str) {
+                return btoa(unescape(encodeURIComponent(str)));
+            }
+
+            textOptionRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'own') {
+                        ownTextArea.style.display = 'block';
+                    } else {
+                        ownTextArea.style.display = 'none';
+                    }
+                    validateForm();
+                });
+            });
+
+            fromWhoInput.addEventListener('input', validateForm);
+            toWhoInput.addEventListener('input', validateForm);
+            ownTextArea.addEventListener('input', validateForm);
+
+            createGiftButton.addEventListener('click', function() {
+                createGiftButton.innerText = 'Creating gift...';
+                createGiftButton.disabled = true;
+
+                setTimeout(() => {
+                    const fromWho = fromWhoInput.value.trim();
+                    const toWho = toWhoInput.value.trim();
+                    const textOption = document.querySelector('input[name="textOption"]:checked').value;
+                    let giftText;
+                    if (textOption === 'random') {
+                        giftText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+                    } else {
+                        giftText = ownTextArea.value.trim();
+                    }
+                    const color = colorSelect.value;
+
+                    const link = `https://haruyt600.github.io/gifts?fw=${base64Encode(fromWho)}&tw=${base64Encode(toWho)}&t=${base64Encode(giftText)}&c=${base64Encode(color)}`;
+                    giftLinkTextarea.value = link;
+
+                    popup.classList.add('active');
+                }, 4000);
+            });
+
+            closePopup.addEventListener('click', function() {
+                popup.classList.remove('active');
+                createGiftButton.innerText = 'CREATE GIFT';
+                createGiftButton.disabled = true;
+                fromWhoInput.value = '';
+                toWhoInput.value = '';
+                textOptionRadios[0].checked = true;
+                ownTextArea.value = '';
+                ownTextArea.style.display = 'none';
+                colorSelect.value = 'pink';
+            });
+
+            copyLinkButton.addEventListener('click', function() {
+                giftLinkTextarea.select();
+                copyLinkButton.innerText = 'Copied!';
+                document.execCommand('copy');
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function ctrlShiftKey(e, keyCode) {
+            return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+        }
+
+        document.onkeydown = (e) => {
+        if (
+            event.keyCode === 123 ||
+            ctrlShiftKey(e, 'I') ||
+            ctrlShiftKey(e, 'J') ||
+            ctrlShiftKey(e, 'C') ||
+            (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+        )
+            return false;
+        };
+        setInterval(() => {debugger;}, 100);
+    </script>
+</body>
+</html>
