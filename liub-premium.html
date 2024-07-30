@@ -1,196 +1,211 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snakebite Chuck</title>
     <style>
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'Uni Sans', sans-serif;
+            background-color: #0F1014;
+            color: white;
             margin: 0;
             padding: 0;
         }
-
-        body {
-            background-color: #262744;
-            font-family: 'uni sans serif', sans-serif;
-            color: white;
-            user-select: none;
-        }
-
         .container {
-            width: 80%;
-            max-width: 800px;
-            margin: 20px auto;
-            border: 2px solid #191B30;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .header {
             text-align: center;
-            padding: 20px;
+            margin: 20px;
         }
-
-        .header img {
-            width: 100px;
-            height: 100px;
+        .icon-container {
+            position: relative;
+            display: inline-block;
+        }
+        .icon-container img {
             border-radius: 50%;
-            object-fit: cover;
         }
-
-        .header h1 {
-            font-size: 36px;
-            margin-top: 10px;
+        .verified-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
-
-        .header p {
-            font-size: 18px;
-            margin-bottom: 10px;
+        h1 {
+            margin: 20px 0 10px;
         }
-
-        .plans {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: stretch;
+        p {
+            margin: 0 0 20px;
+            color: #ccc;
         }
-
-        .plan {
-            width: 48%;
-            min-width: 300px;
-            margin: 10px;
-            padding: 20px;
-            background-color: #191B30;
-            border: 2px solid #5A65EA;
-            border-radius: 10px;
-            transition: transform 0.3s;
+        button {
+            background-color: #5862ED;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-
-        .plan:hover {
+        button:hover {
             transform: scale(1.05);
         }
-
-        .plan h2 {
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 10px;
+        button:disabled {
+            opacity: 0.5;
         }
-
-        .plan ul {
-            list-style: none;
+        .italic {
+            font-style: italic;
+            margin-top: 10px;
+            color: #ccc;
         }
-
-        .plan li {
-            font-size: 18px;
+        .fanart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .fanart-card {
+            background-color: #18171D;
+            border: 1px solid #1A191F;
+            border-radius: 5%;
+            overflow: hidden;
+            margin: 10px;
+            transition: all 0.3s ease;
+            width: 100%; /* Full width on small screens */
+            max-width: 300px; /* Max width for better alignment on larger screens */
+        }
+        .fanart-card img {
+            width: 100%;
+            height: auto;
+        }
+        .fanart-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .fanart-info {
+            padding: 10px;
+            background-color: #18171D;
+            border-top: 1px solid #1A191F;
+        }
+        .fanart-info strong {
+            display: block;
             margin-bottom: 5px;
         }
-
-        .plan li span {
-            margin-right: 10px;
+        .footer {
+            background-color: #000;
+            color: #ccc;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .footer a {
+            color: #ccc;
+            margin: 0 10px;
+        }
+        .social-media-icon {
+            width: auto;
+            height: 40px;
+            margin: 0 5px;
         }
 
-        .plan button {
-            display: block;
-            width: 80%;
-            margin: 10px auto;
-            padding: 10px;
-            background-color: #5A65EA;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
+        @media (min-width: 600px) {
+            .fanart-card {
+                width: calc(33.333% - 20px); /* Three cards per row with some margin */
+            }
         }
 
-        .plan button:hover {
-            background-color: #6A75FA;
+        @media (min-width: 900px) {
+            .fanart-card {
+                width: calc(25% - 20px); /* Four cards per row with some margin */
+            }
         }
-        .play button:disabled {
-            background-color: #2D3275;
-            cursor: not-allowed;
-            color: #808080;
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0F1014;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-       .notification {
-         position: relative;
-         top: 0;
-         left: 0;
-         width: 100%;
-         background-color: #f44336;
-         color: white;
-         padding: 15px;
-         z-index: 1000; /* Ensure it's above other elements */
-       }
-
-       /* CSS for close button */
-       .close {
-         position: absolute;
-         top: 0;
-         right: 0;
-         color: white;
-         font-size: 20px;
-         font-weight: bold;
-         padding: 15px;
-         cursor: pointer;
-       }
     </style>
 </head>
 <body>
-  <div class="notification">
-    Happy lunar new year from the L.I.U.B team! 🐲🧧
-    <span class="close" onclick="this.parentElement.style.display='none';">&times;</span>
-  </div>
+    <div class="loading-overlay" id="loading-overlay">
+        <img style="text-align: center; align-items: center; justify-content: center; height: 200px; width: auto;" src="https://cdn.pixabay.com/animation/2023/03/20/02/45/02-45-27-186_512.gif" alt="Loading...">
+    </div>
     <div class="container">
-        <div class="header">
-            <img src="0f533c8bdc619f48eea782edccb19a91.png" alt="L.I.U.B icon">
-            <h1>L.I.U.B Premium</h1>
-            <p>Upgrade your discord bot experience with L.I.U.B premium plans.</p>
+        <div class="icon-container">
+            <img src="https://i.ibb.co/5kfqxHX/Untitled775-20240723121814.png" alt="Snakebite Chuck Icon" width="150">
+            <img class="verified-badge" src="https://i.ibb.co/9tBvHw1/DB11347-F-5-CB4-4944-A70-C-505-AFD88-B959.png" alt="Verified Badge">
         </div>
-        <div class="plans">
-            <div class="plan">
-                <h2>FREE</h2>
-                <ul>
-                    <li><span>✅</span> Basic features</li>
-                    <li><span>❌</span> Advanced features</li>
-                    <li><span>❌</span> Premium commands</li>
-                    <li><span>❌</span> Exclusive commands</li>
-                </ul>
-                <button onclick="redirect()">Active</button>
-            </div>
-            <div class="plan">
-                <h2>$9,99/Month</h2>
-                <ul>
-                    <li><span>✅</span> Basic features</li>
-                    <li><span>✅</span> Advanced features</li>
-                    <li><span>❌</span> Premium commands</li>
-                    <li><span>❌</span> Exclusive commands</li>
-                </ul>
-                <button onclick="redirect()">Buy Now</button>
-            </div>
-            <div class="plan">
-                <h2>$20/Year</h2>
-                <ul>
-                    <li><span>✅</span> Basic features</li>
-                    <li><span>✅</span> Advanced features</li>
-                    <li><span>✅</span> Premium commands</li>
-                    <li><span>❌</span> Exclusive commands</li>
-                </ul>
-                <button onclick="redirect()">Buy Now</button>
-            </div>
-            <div class="plan">
-                <h2>$99,99/Year</h2>
-                <ul>
-                    <li><span>✅</span> Basic features</li>
-                    <li><span>✅</span> Advanced features</li>
-                    <li><span>✅</span> Premium commands</li>
-                    <li><span>✅</span> Exclusive commands</li>
-                </ul>
-                <button onclick="redirect()">Buy Now</button>
-            </div>
+        <h1>Snakebite Chuck</h1>
+        <p>Snakebite Chuck is a brawl stars Chuck skin made by HaruYT600</p>
+        <button id="vote-button"></button>
+        <p class="italic">You’ll be redirected to vote</p>
+        <div class="fanart-container" id="fanart-container">
         </div>
     </div>
-      <script>
-    function redirect() {
-      window.location.href = "https://cash.app/$DarkHaven1207";
-    }
-  </script>
+    <footer class="footer">
+        &copy; 2024 Snakebite Chuck. All rights reserved.
+        <div>
+            <a href="https://discord.gg/QrF3q9kHPu"><img src="https://freelogopng.com/images/all_img/1691730767discord-logo-transparent.png" alt="Discord" class="social-media-icon"></a>
+            <a href="https://youtube.com/@HaruYT600"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube" class="social-media-icon"></a>
+            <a href="https://tiktok.com/@haruyt600"><img src="https://static.vecteezy.com/system/resources/previews/023/741/129/non_2x/tiktok-logo-icon-social-media-icon-free-png.png" alt="TikTok" class="social-media-icon"></a>
+        </div>
+    </footer>
+    <script>
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }, 3000);
+    });
+    </script>
+    <script>
+        function updateVoteButton() {
+            const voteButton = document.getElementById('vote-button');
+            const now = new Date();
+            const voteStartDate = new Date(Date.UTC(2024, 7, 14, 11, 0, 0));
+            if (now < voteStartDate) {
+                const countdown = voteStartDate - now;
+                const days = Math.floor(countdown / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((countdown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((countdown % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((countdown % (1000 * 60)) / 1000);
+                voteButton.textContent = `Voting starts in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                voteButton.disabled = true;
+            } else {
+                voteButton.textContent = 'VOTE';
+                voteButton.onclick = () => {
+                    window.location.href = 'https://make.supercell.com/en/creation/snakebite-chuck';
+                };
+            }
+        }
+        setInterval(updateVoteButton, 1000);
+
+        const fanarts = [
+            { src: 'https://i.ibb.co/yyQXk1N/Untitled801-20240730010912.png', user: '@hampter21' },
+            { src: 'https://i.ibb.co/C8YNTTt/Untitled801-20240730010935.png', user: 'HaruYT600' },
+        ];
+
+        const fanartContainer = document.getElementById('fanart-container');
+
+        fanarts.forEach(fanart => {
+            const fanartCard = document.createElement('div');
+            fanartCard.className = 'fanart-card';
+            fanartCard.innerHTML = `
+                <img src="${fanart.src}" alt="Fanart">
+                <div class="fanart-info">
+                    <strong>Fanart</strong>
+                    <span>by ${fanart.user}</span>
+                </div>
+            `;
+            fanartContainer.appendChild(fanartCard);
+        });
+    </script>
+    <!--Use latest version-->
+    <script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool@latest'></script>
 </body>
 </html>
