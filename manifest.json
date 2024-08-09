@@ -1,13 +1,13 @@
 {
-  "name": "PIXXALS - Create, Save and Share!",
-  "short_name": "PIXXALS",
+  "name": "Haru600, Inc.",
+  "short_name": "Haru600, Inc.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F1014",
   "theme_color": "#0F1014",
   "icons": [
     {
-      "src": "Untitled647_20240527193108.png",
+      "src": "https://i.ibb.co/JCsHrbW/Untitled826-20240810011728.png",
       "sizes": "192x192",
       "type": "image/png"
     }
