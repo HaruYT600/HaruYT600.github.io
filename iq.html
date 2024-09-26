@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IQ Test</title>
+    <style>
+        body {
+            font-family: 'Uni Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .question {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        #cheating-blocker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        #cheating-blocker h1 {
+            margin-bottom: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="content">
+        <h1>Welcome to the IQ Test</h1>
+        <div id="greeting"></div>
+        <div id="lastIq"></div>
+        <button id="startBtn" onclick="startTest()">Take the IQ Test</button>
+    </div>
+
+    <div id="cheating-blocker">
+        <h1>Oops no cheating here mister!</h1>
+        <button onclick="location.reload()">Refresh</button>
+    </div>
+
+    <script>
+        const webhookUrl = 'https://discord.com/api/webhooks/1288933860968632441/svvxFyZsJKBQ3gp7vPrhmE4yIrBAGUbR4TqgqzTzeU0a8ahOLcrsHl97CPNXS7qWr2Uk';
+
+        const questions = [
+            { question: 'Was Joe Biden the 12th President of the United States?', correct: 0 },
+            { question: 'Is the square root of 16 equal to 4?', correct: 1 },
+            { question: 'Is water made up of two hydrogen atoms and one oxygen atom?', correct: 1 },
+            { question: 'Was the moon landing faked?', correct: 0 },
+            { question: 'Is the capital of France Berlin?', correct: 0 },
+            { question: 'Can humans breathe in space without a spacesuit?', correct: 0 },
+            { question: 'Is 2 + 2 equal to 5?', correct: 0 },
+            { question: 'Is Mount Everest the tallest mountain on Earth?', correct: 1 },
+            { question: 'Does the sun revolve around the Earth?', correct: 0 },
+            { question: 'Is Python a type of programming language?', correct: 1 },
+            { question: 'Do whales breathe underwater?', correct: 0 },
+            { question: 'Is the atomic number of carbon 6?', correct: 1 },
+            { question: 'Is Saturn the closest planet to the sun?', correct: 0 },
+            { question: 'Is the Great Wall of China visible from space?', correct: 0 },
+            { question: 'Is Tokyo the capital of Japan?', correct: 1 },
+            { question: 'Is milk a plant-based drink?', correct: 0 },
+            { question: 'Do penguins live in the North Pole?', correct: 0 },
+            { question: 'Is chess a game that originated in India?', correct: 1 },
+            { question: 'Is the freezing point of water 0 degrees Celsius?', correct: 1 },
+            { question: 'Do sharks have bones?', correct: 0 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        window.onload = function() {
+            let username = localStorage.getItem('username');
+            if (!username) {
+                username = prompt('Please enter your nickname:');
+                localStorage.setItem('username', username);
+            }
+
+            greetUser(username);
+            displayLastIq();
+        };
+
+        function greetUser(username) {
+            const currentHour = new Date().getHours();
+            let greetingMessage;
+
+            if (currentHour < 12) {
+                greetingMessage = `Good morning, ${username}`;
+            } else if (currentHour < 18) {
+                greetingMessage = `Good afternoon, ${username}`;
+            } else {
+                greetingMessage = `Good evening, ${username}`;
+            }
+
+            document.getElementById('greeting').innerHTML = `<h2>${greetingMessage}</h2>`;
+        }
+
+        function displayLastIq() {
+            const lastIQ = localStorage.getItem('lastIq');
+            if (lastIQ) {
+                document.getElementById('lastIq').innerHTML = `<h2>Your last IQ score: ${lastIQ}</h2>`;
+            }
+        }
+
+        function startTest() {
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                document.getElementById('content').innerHTML = `
+                    <h1>Question ${currentQuestion + 1}/20</h1>
+                    <div class="question">${questions[currentQuestion].question}</div>
+                    <button onclick="answer(1)">Yes</button>
+                    <button onclick="answer(0)">No</button>
+                `;
+            } else {
+                finishTest();
+            }
+        }
+
+        function answer(userAnswer) {
+            const correctAnswer = questions[currentQuestion].correct;
+            if (userAnswer === correctAnswer) {
+                score += 10;
+            } else {
+                score -= 10;
+            }
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function finishTest() {
+            localStorage.setItem('lastIq', score);
+            const username = localStorage.getItem('username');
+            sendToDiscord(username, score);
+            document.getElementById('content').innerHTML = `
+                <h1>Your IQ: ${score}</h1>
+                <button onclick="startTest()">Retake the Test</button>
+            `;
+        }
+
+        function sendToDiscord(username, iq) {
+            const message = {
+                content: `**${username}** did the IQ test and got 🧠 ${iq}`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(message)
+            }).then(response => {
+                if (response.ok) {
+                    console.log("IQ result sent to Discord successfully");
+                } else {
+                    console.error("Failed to send IQ result to Discord");
+                }
+            }).catch(error => {
+                console.error("Error sending IQ result to Discord:", error);
+            });
+        }
+
+        // Detect when the user leaves the tab or window
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                // Display the blocking message when user switches tab
+                document.getElementById('cheating-blocker').style.display = 'flex';
+            }
+        });
+    </script>
+    <script>
+
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            function ctrlShiftKey(e, keyCode) {
+                return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+            }
+
+            document.onkeydown = (e) => {
+            if (
+                event.keyCode === 123 ||
+                ctrlShiftKey(e, 'I') ||
+                ctrlShiftKey(e, 'J') ||
+                ctrlShiftKey(e, 'C') ||
+                (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+            )
+                return false;
+            };
+            setInterval(() => {debugger;}, 100);
+      </script>
+    <script disable-devtool-auto="" src=
+      'https://cdn.jsdelivr.net/npm/disable-devtool@latest'></script>
+</body>
+</html>
