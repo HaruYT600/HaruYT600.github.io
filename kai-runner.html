@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kai Runner</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 200px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            margin: 0 auto;
+        }
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: black;
+        }
+        .dino {
+            position: absolute;
+            bottom: 10px; 
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background-image: url('images/89nyxJm/36df49637c343a5b6b32bf9b7c8f3bb1.png');
+            background-size: cover;
+        }
+        .obstacle {
+            position: absolute;
+            bottom: 10px;
+            width: 20px;
+            height: 40px;
+            background-color: black;
+        }
+        .cloud {
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 30px;
+            background-image: url('images/T1Zy7YP/Untitled81-20241022002502.png');
+            background-size: cover;
+        }
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+            font-size: 20px;
+            font-family: monospace;
+            color: #535353; 
+        }
+        .high-score {
+            position: absolute;
+            top: 50px;
+            right: 70px;
+            font-size: 20px;
+            font-family: monospace;
+            color: #757575; 
+            display: none;
+        }
+        .game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 24px;
+            color: white;
+            font-family: monospace;
+            z-index: 10;
+        }
+        .tip-text {
+            bottom: 20px;
+            font-size: 20px;
+            font-family: monospace;
+            color: #535353;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="game-container">
+        <div class="ground"></div>
+        <div class="dino" id="dino"></div>
+        <div class="score" id="score">000000</div>
+        <div class="high-score" id="high-score">HI 000000</div>
+        <div class="game-over-screen" id="game-over-screen">
+            <div>Game Over! Final Score: <span id="final-score"></span></div>
+        </div>
+    </div>
+    <div class="tip-text" id="tip-text">
+        <p>Tip: Use the spacebar to jump over the obstacles</p>
+    </div>
+
+    <audio id="jump-sound" src="sound/jm9bg/d" preload="auto"></audio>
+    <audio id="game-over-sound" src="sound/m6k87/d" preload="auto"></audio>
+
+    <script>
+        let dino = document.getElementById("dino");
+        let gameContainer = document.getElementById("game-container");
+        let scoreDisplay = document.getElementById("score");
+        let highScoreDisplay = document.getElementById("high-score");
+        let gameOverScreen = document.getElementById("game-over-screen");
+        let finalScoreDisplay = document.getElementById("final-score");
+        let tipText = document.getElementById("tip-text");
+
+        let score = 0;
+        let highScore = 0;
+        let isJumping = false;
+        let obstacles = [];
+        let clouds = [];
+        let obstacleInterval, scoreInterval, gravityInterval;
+        let speed = 2; // Initial speed
+
+        // Tips array
+        const tips = [
+            "Tip: Use the spacebar to jump over the obstacles",
+            "Tip: Timing is key to avoid the obstacles!",
+            "Tip: Don't get distracted or you'll lose your score",
+            "Tip: Don't get too comfortable cuz speed increases!",
+            "Tip: Collect points by surviving as long as possible!",
+            "The game is not over until I win!",
+            "I want pizza",
+            "Join our discord server",
+            "I'm a professional player.. uh I mean YOU are",
+            "if you lose I get pizza, deal?",
+            "haru is cool",
+            "do you like pizza too?",
+            "i miss my pizza buddies",
+            "do you also dream of pizza?",
+            "im not a bot!1!",
+            "whos the bot now huh",
+            "Welcome to my game bbg",
+            "i'll get you pizza if u win",
+            "me or your gf? (if you even have one)",
+            "my cat is a dog"
+        ];
+
+        // Create Cloud
+        function createCloud() {
+            const cloud = document.createElement("div");
+            cloud.classList.add("cloud");
+            cloud.style.left = "100vw";
+            gameContainer.appendChild(cloud);
+            clouds.push(cloud);
+            moveCloud(cloud);
+        }
+
+        // Move Cloud
+        function moveCloud(cloud) {
+            let cloudPosition = 100; // Start from the right
+            let cloudInterval = setInterval(() => {
+                if (cloudPosition < -10) {
+                    clearInterval(cloudInterval);
+                    gameContainer.removeChild(cloud);
+                    clouds.shift(); // Remove from array
+                } else {
+                    cloudPosition -= 0.5; // Slow movement of cloud
+                    cloud.style.left = cloudPosition + "vw";
+                }
+            }, 20);
+        }
+
+        // Jump Function
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+
+            // Play the jump sound immediately when jump is triggered
+            document.getElementById("jump-sound").currentTime = 0; // Reset sound if it's still playing
+            document.getElementById("jump-sound").play();
+
+            let velocity = 25; // Increased initial velocity for a higher jump
+            let dinoBottom = parseInt(getComputedStyle(dino).bottom);
+
+            gravityInterval = setInterval(() => {
+                if (velocity > 0 || dinoBottom > 10) {
+                    dinoBottom += velocity;
+                    velocity -= 2.5; // Increased gravity pull down slightly for faster descent
+                    dino.style.bottom = dinoBottom + "px";
+                } else {
+                    clearInterval(gravityInterval);
+                    isJumping = false;
+                }
+            }, 20);
+        }
+
+        // Create Obstacle
+        function createObstacle() {
+            const obstacle = document.createElement("div");
+            obstacle.classList.add("obstacle");
+            obstacle.style.left = "100vw";
+            obstacle.style.bottom = "10px"; // Align with the ground
+            obstacle.style.height = Math.random() < 0.5 ? "40px" : "60px"; // Random height
+            gameContainer.appendChild(obstacle);
+            obstacles.push(obstacle);
+            moveObstacle(obstacle);
+        }
+
+        // Move Obstacle
+        function moveObstacle(obstacle) {
+            let position = 100;
+            let moveInterval = setInterval(() => {
+                if (position < -5) {
+                    clearInterval(moveInterval);
+                    gameContainer.removeChild(obstacle);
+                    obstacles.shift();
+                } else {
+                    position -= speed; // Speed increases over time
+                    obstacle.style.left = position + "vw";
+                }
+
+                // Collision Detection
+                if (checkCollision(obstacle)) {
+                    clearInterval(moveInterval);
+                    endGame();
+                }
+            }, 20);
+        }
+
+        // Collision Detection
+        function checkCollision(obstacle) {
+            const dinoRect = dino.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+            return !(
+                dinoRect.top > obstacleRect.bottom ||
+                dinoRect.bottom < obstacleRect.top ||
+                dinoRect.right < obstacleRect.left ||
+                dinoRect.left > obstacleRect.right
+            );
+        }
+
+        // End Game
+        function endGame() {
+            document.getElementById("game-over-sound").play();
+            clearInterval(obstacleInterval);
+            clearInterval(scoreInterval);
+            gameOverScreen.style.display = "flex"; // Show game over screen
+
+            // Reset speed on game over
+            speed = 2;
+
+            finalScoreDisplay.innerText = score;
+            if (score > highScore) {
+                highScore = score;
+                highScoreDisplay.innerText = "HI " + highScore;
+                highScoreDisplay.style.display = "block";
+            }
+
+            // Remove jump event listener to prevent jumping on game over
+            document.removeEventListener("keydown", jump);
+        }
+
+        // Restart Game
+        function restartGame() {
+            score = 0;
+            speed = 2; // Reset speed
+            isJumping = false;
+            obstacles.forEach(obstacle => gameContainer.removeChild(obstacle));
+            clouds.forEach(cloud => gameContainer.removeChild(cloud));
+            obstacles = [];
+            clouds = [];
+            scoreDisplay.innerText = score.toString().padStart(6, '0');
+            gameOverScreen.style.display = "none"; // Hide game over screen
+
+            // Randomly select a tip from the tips array
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            tipText.children[0].innerText = randomTip;
+
+            startGame(); // Restart game
+
+            
+            document.addEventListener("keydown", jump);
+        }
+
+        // Start Game Loop
+        function startGame() {
+            obstacleInterval = setInterval(createObstacle, 2000); // Create an obstacle every 2 seconds
+            scoreInterval = setInterval(() => {
+                score++;
+                scoreDisplay.innerText = score.toString().padStart(6, '0');
+
+                // Change color if score equals high score
+                if (score === highScore) {
+                    scoreDisplay.style.color = "#FF6E00";
+                    setTimeout(() => {
+                        scoreDisplay.style.color = "#535353"; // Revert to normal color after 3 seconds
+                    }, 1000);
+                }
+            }, 100); // Increase score every 100 milliseconds
+
+            // Increase speed every 1000 high score
+            setInterval(() => {
+                if (highScore > 0 && highScore % 1000 === 0) {
+                    speed += 0.4;
+                }
+            }, 1000);
+
+            // Create clouds every 5 seconds
+            setInterval(createCloud, 5000);
+        }
+
+        // Event Listeners
+        document.addEventListener("keydown", (event) => {
+            if (event.code === "Space") {
+                jump(); // Allow jump with space key
+            }
+        });
+        document.addEventListener("click", jump);
+        gameOverScreen.addEventListener("click", restartGame);
+
+        // Start the game
+        startGame();
+    </script>
+</body>
+</html>
