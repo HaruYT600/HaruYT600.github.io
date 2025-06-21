@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kai Runner</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #150e37, #266286);
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative; /* Added for positioning stars and clouds */
+      overflow: hidden; /* Ensure stars and clouds don't go outside container */
+    }
+    
+    .title {
+      font-size: 48px;
+      margin-bottom: 30px;
+      position: relative; /* To be above stars/clouds */
+      z-index: 1; /* Added to keep title and buttons on top */
+      color: white; /* Make title visible on dark background */
+    }
+    
+    .button {
+      padding: 15px 40px;
+      margin: 10px;
+      font-size: 20px;
+      border: 2px solid white; /* Changed from black to white */
+      border-radius: 10px;
+      background: transparent; /* Changed from white to transparent */
+      color: white; /* Added to ensure text is white on transparent background */
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative; /* To be above stars/clouds */
+      z-index: 1; /* Added to keep title and buttons on top */
+    }
+    
+    .button:hover {
+      background: white; /* Changed from black to white for hover */
+      color: #150e37; /* Changed from white to dark color for hover text */
+    }
+    
+    .ground {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: black;
+      top: 60%;
+    }
+    
+    .score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      text-align: right;
+      color: white; /* Ensure score is visible on dark background */
+    }
+    
+    .game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      z-index: 2; /* Ensure game over screen is above everything */
+    }
+    
+    .info-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(to bottom, #150e37, #266286); /* Changed from white to gradient */
+      padding: 20px;
+      border: 2px solid white; /* Changed from black to white */
+      border-radius: 10px;
+      display: none;
+      z-index: 2; /* Ensure info popup is above everything */
+      color: white; /* Ensure text inside popup is white */
+    }
+    
+    #player {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      transform-origin: center center;
+    }
+    
+    #player img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      user-select: none;
+      transform: rotate(0deg);
+      transform-origin: center center;
+    }
+    
+    .obstacle {
+      position: absolute;
+      background: url('https://i.ibb.co/xK0qqDCF/Screenshot-2025-06-21-203751.png');
+      border: 2px solid black;
+    }
+
+    .cloud {
+      position: absolute;
+      pointer-events: none; /* Clouds should not interfere with clicks */
+      user-select: none; /* Prevent selection */
+    }
+
+    .cloud img {
+      width: 100%;
+      height: 100%;
+    }
+
+    #lobby {
+      background: linear-gradient(to bottom, #150e37, #266286);
+    }
+
+    #game {
+      background: linear-gradient(to bottom, #150e37, #266286);
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0; /* Will fade in */
+      animation: twinkle 4s infinite ease-in-out;
+      z-index: 0; /* Behind other content */
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    #infoText {
+      position: absolute;
+      top: calc(60% + 4px + 10px); /* Position 10px below the ground div's bottom edge (60% + 4px) */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Adjust for perfect centering */
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      opacity: 0.8;
+      z-index: 0; /* Ensure it's behind game elements if needed */
+      display: none; /* Hidden by default */
+    }
+  </style>
+</head>
+<body>
+  <div id="lobby" class="container">
+    <h1 class="title">Kai Runner</h1>
+    <button class="button" onclick="startGame()">PLAY</button>
+    <button class="button" onclick="showInfo()">INFO</button>
+  </div>
+  
+  <div id="game" style="display:none">
+    <div class="score">
+      <div id="current">000000</div>
+      <div id="high"></div>
+    </div>
+    <div class="ground"></div>
+    <div id="player"><img id="player-img" src="https://i.ibb.co/k275WpRW/Untitled521-20250419154235.png" alt="Player"></div>
+    <div id="infoText"></div>
+  </div>
+  
+  <div class="game-over" id="gameOver">
+    <h2>Game Over!</h2>
+    <p>Score: <span id="finalScore">0</span></p>
+    <button class="button" onclick="startGame()">Play Again</button>
+    <button class="button" onclick="showLobby()">Lobby</button>
+  </div>
+  
+  <div class="info-popup" id="infoPopup">
+    <h3>How to Play</h3>
+    <p>Click, tap or press spacebar to jump and avoid obstacles!</p>
+    <p>Score points by surviving longer.</p>
+    <button class="button" onclick="hideInfo()">Okay</button>
+  </div>
+
+  <script>
+    let player;
+    let playerImg;
+    // Jump physics variables
+    let playerGravity = 1; // Increased gravity for faster fall
+    let playerJumpForce = -17; // Decreased magnitude for lower jump
+    let velocity = 0;
+    let isGameOver = false;
+    let score = 0;
+    let highScore = 0;
+    let obstacles = [];
+    let clouds = []; // New array for clouds
+    let lobbyClouds = []; // New array for lobby clouds
+    let stars = []; // New array for stars
+    let gameLoop;
+    let scoreInterval;
+    let rotationAngle = 0;
+    let rotationVelocity = 0; // Changed from rotationSpeed to rotationVelocity
+    let isGrounded = true;
+    let baseSpeed = 7;
+    let jumpStartHeight = 0; // Track the height where jump started
+
+    // Variables for continuous jump
+    let isClicking = false;
+    let isTouching = false;
+    let isSpacebarPressed = false;
+
+    // Double jump variables
+    let canDoubleJump = false;
+    let hasDoubleJumped = false;
+
+    // Coyote time variables
+    let coyoteTime = 100; // milliseconds
+    let lastGroundedTime = 0;
+    
+    // Lobby animation variables
+    let lobbyAnimationLoop;
+
+    // Info text variables
+    let infoTextElement;
+    let infoTextInterval;
+    let currentSentenceIndex = 0; // New variable to track the current sentence index
+    const infoSentences = [
+    "ok but why am i so fast rn",
+    "this sky got no business lookin this good",
+    "clouds lookin like marshmallows ngl",
+    "nah that jump was clean",
+    "bro if i trip it's lag",
+    "iâm just tryna get pizza after this",
+    "speed is my middle name lol",
+    "who needs wings when u got style",
+    "this vibe is immaculate",
+    "me running from homework like",
+    "no spiders up here we safe",
+    "hey did u see that cloud blink",
+    "nezuko would be proud rn",
+    "not even gravity can catch me lmao",
+    "bro i swear i dodged that",
+    "why does this feel like anime ep 1",
+    "i run faster when i think about pizza",
+    "likami if u see this ily",
+    "tbh this run kinda fire",
+    "haru better clip this for the yt"
+];
+
+    
+    // Initial setup for lobby
+    document.addEventListener('DOMContentLoaded', () => {
+      infoTextElement = document.getElementById('infoText'); // Get reference to the info text element
+      showLobby(); // This will now handle starting initial lobby animations
+    });
+
+    function showInfo() {
+      document.getElementById('infoPopup').style.display = 'block';
+    }
+    
+    function hideInfo() {
+      document.getElementById('infoPopup').style.display = 'none';
+    }
+    
+    function showLobby() {
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('gameOver').style.display = 'none';
+      document.getElementById('lobby').style.display = 'flex';
+      // Hide info text and clear its interval
+      if (infoTextElement) { // Check if element is defined before accessing
+        infoTextElement.style.display = 'none';
+      }
+      if (infoTextInterval) clearInterval(infoTextInterval);
+
+      obstacles.forEach(o => o.remove());
+      obstacles = [];
+      clouds.forEach(c => c.remove()); // Remove game clouds
+      clouds = [];
+      // Reset input states when going back to lobby
+      isClicking = false;
+      isTouching = false;
+      isSpacebarPressed = false;
+
+      // Stop any existing background animations (could be from game)
+      stopLobbyAnimations();
+      // Start lobby-specific animations
+      startLobbyAnimations();
+    }
+    
+    function startGame() {
+      document.getElementById('lobby').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      document.getElementById('gameOver').style.display = 'none';
+      
+      // Stop lobby animations and clear lobby stars
+      stopLobbyAnimations();
+
+      // Create stars for the game background
+      createStars(document.getElementById('game'));
+
+      // Remove all existing obstacles and clouds
+      obstacles.forEach(o => o.remove());
+      obstacles = [];
+      clouds.forEach(c => c.remove());
+      clouds = [];
+      
+      player = document.getElementById('player');
+      playerImg = document.getElementById('player-img');
+      player.style.top = '50%';
+      playerImg.style.transform = 'rotate(0deg)';
+      
+      isGameOver = false;
+      score = 0;
+      velocity = 0;
+      rotationAngle = 0; 
+      rotationVelocity = 0; // Reset rotation speed
+      isGrounded = true;
+      jumpStartHeight = 0;
+      canDoubleJump = false; // Reset double jump state
+      hasDoubleJumped = false; // Reset double jump state
+      lastGroundedTime = Date.now(); // Reset coyote time
+      updateScore();
+      
+      if(gameLoop) clearInterval(gameLoop);
+      if(scoreInterval) clearInterval(scoreInterval);
+      
+      gameLoop = setInterval(update, 1000/60);
+      scoreInterval = setInterval(() => {
+        score += 1;
+        updateScore();
+        if(score % 100 === 0) scoreFlash();
+      }, 100);
+      
+      // Remove event listeners before adding them again to prevent duplicates
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      
+      // Add new event listeners for continuous jump
+      document.addEventListener('mousedown', handleMouseDown);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchstart', handleTouchStart, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('keyup', handleKeyUp);
+      
+      spawnObstacle();
+      spawnCloud(); // Start spawning clouds
+
+      // Start info text updates
+      startInfoText();
+    }
+
+    function handleMouseDown(e) {
+      if(e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        isClicking = true;
+        jump(); // Initial jump
+      }
+    }
+
+    function handleMouseUp() {
+      isClicking = false;
+    }
+
+    function handleTouchStart(e) {
+      if(e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        isTouching = true;
+        jump(); // Initial jump
+      }
+    }
+
+    function handleTouchEnd() {
+      isTouching = false;
+    }
+
+    function handleKeyDown(e) {
+      if(e.code === 'Space' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        if(!isSpacebarPressed) { // Only jump once per keydown, then set flag
+          isSpacebarPressed = true;
+          jump(); // Initial jump
+        }
+      }
+    }
+
+    function handleKeyUp(e) {
+      if(e.code === 'Space') {
+        isSpacebarPressed = false;
+      }
+    }
+    
+    function update() {
+      if(isGameOver) return;
+      
+      velocity += playerGravity; // Use playerGravity
+      let newTop = player.offsetTop + velocity;
+
+      if (isGrounded) { 
+        lastGroundedTime = Date.now(); 
+      }
+      
+      const groundLevel = window.innerHeight * 0.6 - 40; // Ground level for player bottom
+      
+      // Update rotationVelocity based on vertical velocity
+      // We want clockwise rotation when airborne, so a positive multiplier is needed.
+      rotationAngle += velocity * 0.2; // Adjust multiplier (0.2) to fine-tune rotation speed
+
+      // Normalize rotation angle to stay within 0-360 degrees (or -180 to 180 if preferred)
+      rotationAngle = rotationAngle % 360; 
+    
+      // Check if falling below ground or currently grounded
+      if(newTop > groundLevel) {
+        newTop = groundLevel;
+        velocity = 0;
+        
+        // Smoothly settle rotation on landing
+        // Dampen rotationVelocity and rotationAngle.
+        // Instead of snapping, gently reduce rotation.
+        if (Math.abs(rotationAngle) > 0.1 || Math.abs(rotationVelocity) > 0.1) {
+          rotationAngle *= 0.8; // Gradually reduce rotation
+          rotationVelocity *= 0.8; // Gradually reduce rotation velocity
+        } else {
+          rotationAngle = 0; // Snap to 0 if very close
+          rotationVelocity = 0;
+        }
+        player.style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
+        playerImg.style.transform = `rotate(0deg)`;
+
+        // Check if player landed AND input is still held down
+        if (!isGrounded && (isClicking || isTouching || isSpacebarPressed)) {
+          isGrounded = true; // Temporarily set to true to allow immediate re-jump
+          jump(); // Re-jump if input is held
+        } else {
+          isGrounded = true;
+        }
+        canDoubleJump = false; // Reset double jump when grounded on the floor
+        hasDoubleJumped = false; // Reset double jump when grounded on the floor
+
+      } else {
+        // Player is in the air or on an obstacle
+        let onObstacle = false;
+        for(const obstacle of obstacles) {
+          const obstacleRect = obstacle.getBoundingClientRect();
+          const playerRect = player.getBoundingClientRect();
+
+          // Check if player's bottom is roughly aligned with obstacle's top
+          if (Math.abs(playerRect.bottom - obstacleRect.top) < 5 && // Close to the top of the obstacle
+              playerRect.right > obstacleRect.left &&
+              playerRect.left < obstacleRect.right) {
+            onObstacle = true;
+            
+            // Smoothly settle rotation if landed on an obstacle
+            if (Math.abs(rotationAngle) > 0.1 || Math.abs(rotationVelocity) > 0.1) {
+              rotationAngle *= 0.8; 
+              rotationVelocity *= 0.8;
+            } else {
+              rotationAngle = 0;
+              rotationVelocity = 0;
+            }
+            player.style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
+            playerImg.style.transform = `rotate(0deg)`;
+            break;
+          }
+        }
+
+        if(!onObstacle) { // Only update rotation based on velocity if not firmly on an obstacle
+            isGrounded = false;
+            // The rotationAngle update for airborne state is now outside this block
+            player.style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
+            playerImg.style.transform = `rotate(0deg)`;
+        }
+      }
+      
+      player.style.top = newTop + 'px';
+      
+      checkCollisions();
+      updateObstacles();
+      updateClouds(); // Update clouds position
+    }
+    
+    function jump() {
+      if(isGameOver) return;
+      if(isGrounded || (Date.now() - lastGroundedTime < coyoteTime)) {
+        velocity = playerJumpForce; // Use playerJumpForce
+        isGrounded = false; // Player is now in the air
+        hasDoubleJumped = false; // Reset double jump availability after first jump
+        canDoubleJump = false; // Cannot double jump immediately after a normal jump
+        // No explicit rotationVelocity reset here, it will be naturally handled by the update logic
+      } else if (canDoubleJump && !hasDoubleJumped) {
+        velocity = playerJumpForce; // Apply jump force for double jump
+        hasDoubleJumped = true; // Mark that a double jump has occurred
+        canDoubleJump = false; // Consume the double jump ability
+        // No explicit rotationVelocity reset here for double jump
+      }
+    }
+    
+    function spawnObstacle() {
+      if(isGameOver) return;
+      
+      // Check if there's a recent obstacle that's too close
+      const lastObstacle = obstacles[obstacles.length - 1];
+      if(lastObstacle && lastObstacle.offsetLeft > window.innerWidth - 300) { // Increased from 100 to 300 for more space
+        // Schedule next spawn attempt
+        setTimeout(spawnObstacle, 500);
+        return;
+      }
+      
+      const obstacle = document.createElement('div');
+      obstacle.className = 'obstacle';
+      
+      const isSpike = Math.random() > 0.5;
+      if(isSpike) {
+        obstacle.style.width = '20px';
+        obstacle.style.height = '40px';
+        obstacle.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+        obstacle.dataset.type = 'spike'; // Add data attribute for type
+      } else {
+        obstacle.style.width = '30px';
+        obstacle.style.height = Math.random() * 60 + 20 + 'px';
+        obstacle.dataset.type = 'square'; // Add data attribute for type
+      }
+      
+      obstacle.style.left = window.innerWidth + 'px';
+      obstacle.style.bottom = window.innerHeight * 0.4 + 'px';
+      
+      document.getElementById('game').appendChild(obstacle);
+      obstacles.push(obstacle);
+      
+      setTimeout(spawnObstacle, Math.random() * 1000 + 1000); // Decreased delay for more frequent obstacles (1000-2000ms instead of 1500-3500ms)
+    }
+
+    function spawnCloud() {
+      if(isGameOver) return;
+
+      // Ensure clouds don't overlap too much or spawn too close to existing ones
+      const lastCloud = clouds[clouds.length - 1];
+      if (lastCloud) {
+        const lastCloudRight = lastCloud.offsetLeft + lastCloud.offsetWidth;
+        if (lastCloudRight > window.innerWidth - 250) { // Keep a minimum distance
+          setTimeout(spawnCloud, Math.random() * 500 + 300); // Shorter delay if too close
+          return;
+        }
+      }
+      
+      const cloud = document.createElement('div');
+      cloud.className = 'cloud';
+      const cloudImg = document.createElement('img');
+      cloudImg.src = 'https://i.ibb.co/bgy98GF0/cloud-pixel-art.png';
+      cloud.appendChild(cloudImg);
+
+      const size = Math.random() * 50 + 50; // Random size between 50px and 100px
+      cloud.style.width = size + 'px';
+      cloud.style.height = size * 0.6 + 'px'; // Maintain aspect ratio for typical cloud shapes
+
+      cloud.style.left = window.innerWidth + 'px';
+      cloud.style.top = Math.random() * (window.innerHeight * 0.4 - size) + 'px'; // Random top position, above ground level
+      cloud.style.opacity = Math.random() * 0.4 + 0.6; // Slightly transparent
+      
+      document.getElementById('game').appendChild(cloud);
+      clouds.push(cloud);
+      
+      // Spawn clouds more frequently than obstacles, with varied intervals
+      setTimeout(spawnCloud, Math.random() * 500 + 200); // Spawn every 200-700ms
+    }
+    
+    function updateObstacles() {
+      const currentSpeed = baseSpeed * getSpeedMultiplier();
+      
+      for(let i = obstacles.length - 1; i >= 0; i--) {
+        const obstacle = obstacles[i];
+        obstacle.style.left = obstacle.offsetLeft - currentSpeed + 'px';
+        
+        if(obstacle.offsetLeft < -50) {
+          obstacle.remove();
+          obstacles.splice(i, 1);
+        }
+      }
+    }
+
+    function updateClouds() {
+      const currentSpeed = baseSpeed * getSpeedMultiplier(); // Clouds move at the same speed as obstacles
+      
+      for(let i = clouds.length - 1; i >= 0; i--) {
+        const cloud = clouds[i];
+        cloud.style.left = cloud.offsetLeft - currentSpeed * 0.7 + 'px'; // Clouds move slightly slower for parallax
+
+        // Remove clouds when they are off screen
+        if(cloud.offsetLeft + cloud.offsetWidth < 0) {
+          cloud.remove();
+          clouds.splice(i, 1);
+        }
+      }
+    }
+    
+    function checkCollisions() {
+      const playerRect = player.getBoundingClientRect();
+      let hasLandedOnObstacleThisFrame = false; 
+
+      for(const obstacle of obstacles) {
+        const obstacleRect = obstacle.getBoundingClientRect();
+        
+        const isOverlapping = 
+          playerRect.right > obstacleRect.left &&
+          playerRect.left < obstacleRect.right &&
+          playerRect.bottom > obstacleRect.top &&
+          playerRect.top < obstacleRect.bottom;
+
+        if (isOverlapping) {
+          // Check if player's bottom is colliding with obstacle's top (landing on it)
+          // This considers a small tolerance for "landing" to make it smoother
+          const isLandingOnObstacle = 
+            playerRect.bottom >= obstacleRect.top && 
+            playerRect.bottom <= obstacleRect.top + 10 && // Within 10px of obstacle top
+            playerRect.top < obstacleRect.top && 
+            velocity >= 0; // Player is falling or stationary
+
+          if (isLandingOnObstacle && obstacle.dataset.type === 'square') {
+            // Adjust player's position to be exactly on top of the obstacle
+            player.style.top = (obstacleRect.top - playerRect.height) + 'px';
+            velocity = 0; // Stop vertical movement
+            // Smoothly settle rotation on landing
+            if (Math.abs(rotationAngle) > 0.1 || Math.abs(rotationVelocity) > 0.1) {
+              rotationAngle *= 0.8; 
+              rotationVelocity *= 0.8;
+            } else {
+              rotationAngle = 0;
+              rotationVelocity = 0;
+            }
+            player.style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
+            playerImg.style.transform = `rotate(0deg)`;
+
+            isGrounded = true; // Player is now grounded (on the obstacle)
+            hasLandedOnObstacleThisFrame = true; // Set flag
+            canDoubleJump = true; // Allow double jump if landing on a square obstacle
+            lastGroundedTime = Date.now(); // Update last grounded time when landing on an obstacle
+            break; // Break loop, player is safely on an obstacle
+          } else {
+            // If it's not a gentle landing on a square obstacle, it's game over
+            gameOver();
+            return; // Exit function immediately on game over
+          }
+        }
+      }
+
+      // If player was in the air and didn't land on any obstacle (or fell off one), reset isGrounded
+      // This ensures rotation continues and double jump is not allowed if not truly grounded.
+      const groundLevel = window.innerHeight * 0.6 - 40;
+      if (!hasLandedOnObstacleThisFrame && player.offsetTop < groundLevel) {
+        isGrounded = false;
+        canDoubleJump = false; 
+      }
+    }
+    
+    function gameOver() {
+      isGameOver = true;
+      clearInterval(gameLoop);
+      clearInterval(scoreInterval);
+      // Stop info text updates
+      if (infoTextInterval) clearInterval(infoTextInterval);
+      if (infoTextElement) { // Check if element is defined before accessing
+        infoTextElement.style.display = 'none';
+      }
+      
+      if(score > highScore) {
+        highScore = score;
+        document.getElementById('high').textContent = 'HI ' + String(highScore).padStart(6, '0');
+      }
+      
+      document.getElementById('gameOver').style.display = 'flex';
+      document.getElementById('finalScore').textContent = score;
+
+      // Reset input states on game over
+      isClicking = false;
+      isTouching = false;
+      isSpacebarPressed = false;
+      canDoubleJump = false; // Reset double jump state
+      hasDoubleJumped = false; // Reset double jump state
+    }
+    
+    function updateScore() {
+      document.getElementById('current').textContent = String(score).padStart(6, '0');
+    }
+    
+    function scoreFlash() {
+      const scoreEl = document.getElementById('current');
+      scoreEl.style.fontSize = '32px';
+      setTimeout(() => scoreEl.style.fontSize = '24px', 200);
+    }
+    
+    function getSpeedMultiplier() {
+      if(score >= 2000) return 2.0;
+      if(score >= 1000) return 1.6;
+      if(score >= 500) return 1.4;
+      if(score >= 200) return 1.2;
+      if(score >= 100) return 1.1;
+      return 1.0;
+    }
+
+    // New function to create and manage stars for a given container
+    function createStars(containerElement) {
+      // Clear any existing stars from the DOM and the array before creating new ones
+      stars.forEach(s => s.remove()); 
+      stars = []; 
+
+      for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 4 + 's';
+        containerElement.appendChild(star);
+        stars.push(star);
+      }
+    }
+
+    // Lobby specific functions
+    function startLobbyAnimations() {
+      createStars(document.getElementById('lobby')); // Use the new function to create stars for the lobby
+
+      // Only spawn initial clouds if none are present
+      if (lobbyClouds.length === 0) {
+        for (let i = 0; i < 5; i++) { // Spawn a few clouds initially to fill the screen
+            spawnLobbyCloud(true); // Pass true to spawn immediately without delay
+        }
+      }
+      
+      // Ensure the spawning interval continues
+      if (!window.lobbyCloudSpawnInterval) { // Use a global or specific variable to prevent multiple intervals
+          window.lobbyCloudSpawnInterval = setInterval(() => spawnLobbyCloud(false), Math.random() * 2000 + 1000); // Regular spawning
+      }
+
+      if(lobbyAnimationLoop) clearInterval(lobbyAnimationLoop);
+      lobbyAnimationLoop = setInterval(updateLobbyAnimations, 1000/60);
+    }
+
+    function stopLobbyAnimations() {
+      clearInterval(lobbyAnimationLoop);
+      clearInterval(window.lobbyCloudSpawnInterval); // Clear the spawning interval too
+      window.lobbyCloudSpawnInterval = null; // Reset the interval variable
+
+      // This function now effectively clears any stars or lobby-specific clouds from the previous screen
+      stars.forEach(s => s.remove());
+      stars = [];
+      lobbyClouds.forEach(c => c.remove());
+      lobbyClouds = [];
+    }
+
+    function spawnLobbyCloud(initialSpawn = false) {
+      // Limit the number of clouds in the lobby to 5
+      if (!initialSpawn && lobbyClouds.length >= 5) {
+        return; 
+      }
+
+      const lobbyElement = document.getElementById('lobby');
+      const MAX_ATTEMPTS = 10; // Increased attempts to find a spot
+      const MIN_CLOUD_SPACING = 20; // Minimum pixels between clouds (horizontal and vertical)
+
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        const cloud = document.createElement('div');
+        cloud.className = 'cloud';
+        const cloudImg = document.createElement('img');
+        cloudImg.src = 'https://i.ibb.co/bgy98GF0/cloud-pixel-art.png';
+        cloud.appendChild(cloudImg);
+
+        const size = Math.random() * 100 + 80; // Random size between 80px and 180px
+        const cloudWidth = size;
+        const cloudHeight = size * 0.6; // Maintain aspect ratio for typical cloud shapes
+
+        cloud.style.width = cloudWidth + 'px';
+        cloud.style.height = cloudHeight + 'px'; 
+
+        let cloudLeft;
+        if (initialSpawn) {
+          // For initial spawn, spread clouds across the screen
+          cloudLeft = Math.random() * window.innerWidth;
+        } else {
+          // For continuous spawning, start off-screen right
+          // Add buffer for new clouds appearing, to avoid immediately overlapping with existing ones at the edge
+          cloudLeft = window.innerWidth + Math.random() * 200 + 50; 
+        }
+        
+        // Ensure cloud top is within reasonable upper half of the screen
+        const maxCloudTop = window.innerHeight - cloudHeight; // Allow cloud to spawn anywhere, up to the bottom edge
+        const minCloudTop = 0; // Can spawn at the very top
+        const cloudTop = Math.random() * (maxCloudTop - minCloudTop) + minCloudTop;
+
+        cloud.style.top = cloudTop + 'px';
+        cloud.style.opacity = Math.random() * 0.3 + 0.3; // Slightly transparent
+        cloud.style.zIndex = 0; // Behind other lobby content
+
+        // Calculate prospective rectangle for the new cloud based on its calculated properties
+        const newCloudRect = {
+          left: cloudLeft,
+          right: cloudLeft + cloudWidth,
+          top: cloudTop,
+          bottom: cloudTop + cloudHeight
+        };
+
+        let overlapDetected = false;
+        // Check against all existing lobby clouds
+        for (const existingCloud of lobbyClouds) {
+          // Get current rectangle for existing cloud using its live offset properties
+          const existingCloudRect = {
+            left: existingCloud.offsetLeft,
+            right: existingCloud.offsetLeft + existingCloud.offsetWidth,
+            top: existingCloud.offsetTop,
+            bottom: existingCloud.offsetTop + existingCloud.offsetHeight
+          };
+          
+          // Check for overlap, considering a minimum spacing around clouds
+          if (checkOverlapWithSpacing(newCloudRect, existingCloudRect, MIN_CLOUD_SPACING)) {
+            overlapDetected = true;
+            break; // Overlap found, try another position
+          }
+        }
+
+        if (!overlapDetected) {
+          cloud.style.left = cloudLeft + 'px'; // Apply the calculated left position
+          lobbyElement.appendChild(cloud);
+          lobbyClouds.push(cloud);
+          return; // Cloud spawned successfully, exit function
+        }
+      }
+      // If loop finishes (MAX_ATTEMPTS reached), it means we couldn't find a non-overlapping spot.
+      // In this case, no new cloud is spawned for this attempt, preventing overcrowding.
+    }
+
+    // Helper function for AABB (Axis-Aligned Bounding Box) collision detection with added spacing
+    function checkOverlapWithSpacing(rect1, rect2, spacing) {
+      return rect1.left < rect2.right + spacing &&
+             rect1.right > rect2.left - spacing &&
+             rect1.top < rect2.bottom + spacing &&
+             rect1.bottom > rect2.top - spacing;
+    }
+
+    function updateLobbyAnimations() {
+      // Move lobby clouds
+      for(let i = lobbyClouds.length - 1; i >= 0; i--) {
+        const cloud = lobbyClouds[i];
+        cloud.style.left = cloud.offsetLeft - 1 + 'px'; // Clouds move at a fixed speed
+
+        // Remove clouds when they are off screen
+        if(cloud.offsetLeft + cloud.offsetWidth < 0) {
+          cloud.remove();
+          lobbyClouds.splice(i, 1);
+        }
+      }
+    }
+
+    // New functions for info text
+    function updateInfoText() {
+        if (!infoTextElement) return; // Ensure element exists
+
+        // Generate a random index for the sentence
+        const randomIndex = Math.floor(Math.random() * infoSentences.length);
+        infoTextElement.textContent = infoSentences[randomIndex];
+        
+        // Schedule next update with a random delay (3 to 8 seconds)
+        const nextDelay = (Math.random() * 5 + 3) * 1000; // 3000ms to 8000ms
+        infoTextInterval = setTimeout(updateInfoText, nextDelay);
+    }
+
+    function startInfoText() {
+        if (!infoTextElement) return; // Ensure element exists
+        infoTextElement.style.display = 'block'; // Show the text div
+        if (infoTextInterval) clearInterval(infoTextInterval); // Clear any existing interval
+        updateInfoText(); // Immediately show first sentence
+    }
+  </script>
+</body>
+</html>
